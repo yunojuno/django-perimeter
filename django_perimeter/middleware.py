@@ -6,7 +6,6 @@ import logging
 
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed, PermissionDenied
-from django.http import HttpResponseForbidden
 
 from .models import AccessToken
 
@@ -69,9 +68,10 @@ class PerimeterAccessMiddleware(object):
                     ua = request.META.get('HTTP_USER_AGENT', 'unknown')
                     token.record_usage(client_ip=ip, client_user_agent=ua)
                     request.session[self.PERIMETER_SESSION_KEY] = token
+                    return None
                 else:
-                    return PermissionDenied()
+                    raise PermissionDenied()
             except AccessToken.DoesNotExist:
-                return PermissionDenied()
+                raise PermissionDenied()
         else:
             raise PermissionDenied()

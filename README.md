@@ -28,7 +28,7 @@ The first time that it's used in a session the usage is recorded, along with cli
 
 ## Setup
 
-1. Add 'perimeter' to your installed apps.
-2. Add 'perimeter.middleware.PerimeterAccessMiddleware' to the list of MIDDLEWARE_CLASSES
+1. Add 'django_perimeter' to your installed apps.
+2. Add 'django_perimeter.middleware.PerimeterAccessMiddleware' to the list of MIDDLEWARE_CLASSES
 3. Add PERIMETER_ENABLED=True to your settings file. This setting can be used to enable or disable Perimeter in different environments.
-
+4. (optional) Add PERIMETER_SESSION_KEY setting to your settings file to override the default value of 'pt'.

@@ -8,13 +8,13 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-perimeter',
-    version='0.1.1',
-    packages=['django_perimeter'],
+    version='0.2',
+    packages=['perimeter'],
     include_package_data=True,
     license='BSD License',
     description='Site-wide perimeter access control for Django projects.',
     long_description=README,
-    url='https://github.com/hugorodgerbrown/django-perimeter',
+    url='https://github.com/yunojuno/django-perimeter',
     author='Hugo Rodger-Brown',
     author_email='hugo@yunojuno.com',
     classifiers=[

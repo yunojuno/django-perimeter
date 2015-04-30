@@ -12,7 +12,6 @@ from perimeter.models import AccessToken
 
 logger = logging.getLogger(__name__)
 
-PERIMETER_ENABLED = getattr(settings, 'PERIMETER_ENABLED', False)
 PERIMETER_SESSION_KEY = getattr(settings, 'PERIMETER_SESSION_KEY', 'perimeter')
 
 
@@ -30,7 +29,7 @@ class PerimeterAccessMiddleware(object):
         Raises MiddlewareNotUsed exception if the PERIMETER_ENABLED setting
         is not True - this is used by Django framework to remove the middleware.
         """
-        if not PERIMETER_ENABLED:
+        if not getattr(settings, 'PERIMETER_ENABLED', False):
             raise MiddlewareNotUsed()
 
     def process_request(self, request):

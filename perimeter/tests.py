@@ -2,12 +2,14 @@
 # perimeter tests
 import datetime
 
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.test import TestCase, RequestFactory
+from django.contrib.auth.models import User, AnonymousUser
+from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
+from django.test import TestCase, RequestFactory, override_settings
+from django.utils.timezone import now
 
 from perimeter.forms import GatewayForm
-from perimeter.models import AccessToken, AccessTokenUse
+from perimeter.middleware import PerimeterAccessMiddleware
+from perimeter.models import AccessToken, AccessTokenUse, default_expiry
 
 TODAY = datetime.date.today()
 YESTERDAY = TODAY - datetime.timedelta(days=1)
@@ -16,13 +18,19 @@ TOMORROW = TODAY + datetime.timedelta(days=1)
 
 class AccessTokenTests(TestCase):
 
-    def test_attrs(self):
+    @override_settings(PERIMETER_DEFAULT_EXPIRY=1)
+    def test_default_expiry(self):
+        self.assertEqual(
+            default_expiry(),
+            now().date() + datetime.timedelta(days=1)
+        )
 
+    def test_attrs(self):
         # start with the defaults
         at = AccessToken()
         self.assertEqual(at.token, '')
         self.assertEqual(at.is_active, True)
-        self.assertEqual(at.expires_on, TOMORROW)
+        self.assertEqual(at.expires_on, default_expiry())
         self.assertEqual(at.created_at, None)
         self.assertEqual(at.updated_at, None)
         self.assertEqual(at.created_by, None)
@@ -125,22 +133,77 @@ class GatewayFormTests(TestCase):
         self.assertEqual(au.client_user_agent, 'test_agent')
 
 
+@override_settings(PERIMETER_ENABLED=True)
 class PerimeterMiddlewareTests(TestCase):
 
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        # spoof the Auth and Session middleware
+        self.request.user = User()
+        self.request.session = {}
+        self.middleware = PerimeterAccessMiddleware()
+
+    @override_settings(PERIMETER_ENABLED=False)
+    def test_disabled(self):
+        """Check the PERIMETER_ENABLED setting is honoured."""
+        self.assertRaises(
+            MiddlewareNotUsed,
+            PerimeterAccessMiddleware  # runs __init__()
+        )
+
     def test_missing_user(self):
-        self.fail("Write me")
+        """Missing request.user should raise AssertionError."""
+        del self.request.user
+        self.assertRaises(
+            AssertionError,
+            self.middleware.process_request,
+            self.request
+        )
 
     def test_missing_session(self):
-        self.fail("Write me")
+        """Missing request.session should raise AssertionError."""
+        del self.request.session
+        self.assertRaises(
+            AssertionError,
+            self.middleware.process_request,
+            self.request
+        )
 
     def test_authenticated_user(self):
-        self.fail("Write me")
+        """Authenticated request.user should pass through."""
+        self.assertIsNone(
+            self.middleware.process_request(self.request)
+        )
 
     def test_admin_paths(self):
         self.fail("Write me")
 
     def test_missing_token(self):
-        self.fail("Write me")
+        """AnonymousUser without a token should be denied."""
+        self.request.user = AnonymousUser()
+        self.assertRaises(
+            PermissionDenied,
+            self.middleware.process_request,
+            self.request
+        )
 
     def test_invalid_token(self):
-        self.fail("Write me")
+        self.request.user = AnonymousUser()
+        self.request.session['token'] = "foobar"
+        self.assertRaises(
+            PermissionDenied,
+            self.middleware.process_request,
+            self.request
+        )
+
+    def test_valid_token(self):
+        """AnonymousUser with a valid session token should pass through."""
+        at = AccessToken(token="foobar").save()
+        self.request.user = AnonymousUser()
+        self.request.session['token'] = "foobar"
+        self.assertRaises(
+            PermissionDenied,
+            self.middleware.process_request,
+            self.request
+        )

@@ -4,17 +4,17 @@ Django models for the Perimeter app.
 """
 from datetime import date, timedelta
 
+from django.conf import settings
 from django.contrib.admin import site, ModelAdmin
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.timezone import now
 
 
-def tomorrow():
-    """
-    Return tomorrow's date (helper function).
-    """
-    return date.today() + timedelta(days=1)
+def default_expiry():
+    """Return the default expiry date."""
+    days = getattr(settings, 'PERIMETER_DEFAULT_EXPIRY', 7)
+    return (now() + timedelta(days=days)).date()
 
 
 class AccessToken(models.Model):
@@ -23,7 +23,9 @@ class AccessToken(models.Model):
     """
     token = models.CharField(max_length=10, unique=True)
     is_active = models.BooleanField(default=True)
-    expires_on = models.DateField(default=tomorrow())
+    # NB pass in a callable, not the result of the callable, see:
+    # http://stackoverflow.com/a/29549675/45698
+    expires_on = models.DateField(default=default_expiry)
     created_by = models.ForeignKey(User, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

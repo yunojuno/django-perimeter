@@ -26,7 +26,12 @@ INSTALLED_APPS = (
 )
 
 # none required, but need to explicitly state this for Django 1.7
-MIDDLEWARE_CLASSES = []
+MIDDLEWARE_CLASSES = [
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+]
 
 SECRET_KEY = "something really, really hard to guess goes here."
 

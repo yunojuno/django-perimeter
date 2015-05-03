@@ -3,6 +3,7 @@
 Django models for the Perimeter app.
 """
 from datetime import date, timedelta
+import random
 
 from django.conf import settings
 from django.contrib.admin import site, ModelAdmin
@@ -15,6 +16,42 @@ def default_expiry():
     """Return the default expiry date."""
     days = getattr(settings, 'PERIMETER_DEFAULT_EXPIRY', 7)
     return (now() + timedelta(days=days)).date()
+
+
+class EmptyToken(object):
+    """Token-like object that will always return is_valid() == False.
+
+    EmptyToken objects are a bit like Django's AnonymousUser model -
+    they return an object that can be used like an AccessToken but that
+    is always invalid.
+    """
+    def is_valid(self):
+        return False
+
+
+class AccessTokenManager(models.Manager):
+    """Custom model manager for AccessTokens."""
+
+    def create_access_token(self, **kwargs):
+        """Create a new AccessToken with a random token value."""
+        # NB there is a theoretical token clash exception here,
+        # when the random_token_value function returns an existing
+        # token value, but it is considered so unlikely as to be
+        # acceptable.
+        kwargs['token'] = kwargs.get('token', AccessToken.random_token_value())
+        return AccessToken(**kwargs).save()
+
+    def get_access_token(self, token):
+        """Fetch an AccessToken, return EmptyToken if not found.
+
+        Args:
+            token - string, the token value to look up.
+
+        """
+        try:
+            return self.get(token=token)
+        except AccessToken.DoesNotExist:
+            return EmptyToken()
 
 
 class AccessToken(models.Model):
@@ -30,11 +67,27 @@ class AccessToken(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
+    objects = AccessTokenManager()
+
     def __unicode__(self):
         return u"Access token: %s" % self.token
 
     def __str__(self):
         return self.__unicode__().encode('UTF-8')
+
+    @classmethod
+    def random_token_value(cls):
+        """Generate a random token value."""
+        return "".join(
+            random.sample(
+                population=list(
+                    "abcdefghijklmnopqrstuvwxyz"
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "1234567890"
+                ),
+                k=cls._meta.get_field('token').max_length
+            )
+        )
 
     def save(self, *args, **kwargs):
         "Sets the created_at timestamp."
@@ -68,19 +121,7 @@ class AccessToken(models.Model):
 class AccessTokenAdmin(ModelAdmin):
 
     raw_id_fields = ('created_by',)
-    list_display = ('token', 'created_at', 'created_by')
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        Presets the 'created_by' field to the current user.
-
-        Taken from http://stackoverflow.com/a/5633217
-        """
-        if db_field.name == 'created_by':
-            kwargs['initial'] = request.user.id
-        return super(AccessTokenAdmin, self).formfield_for_foreignkey(
-            db_field, request, **kwargs
-        )
+    list_display = ('token', 'expires_on', 'is_active', 'created_at', 'created_by')
 
 
 class AccessTokenUse(models.Model):

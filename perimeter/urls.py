@@ -4,5 +4,5 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns(
     'perimeter.views',
-    url(r'^gateway/', 'gateway', name='perimeter:gateway'),
+    url(r'^gateway/', 'gateway', name='gateway'),
 )

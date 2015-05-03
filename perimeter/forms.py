@@ -3,6 +3,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
+from perimeter.middleware import set_request_token
 from perimeter.models import AccessToken, AccessTokenUse
 
 class GatewayForm(forms.Form):
@@ -25,6 +26,7 @@ class GatewayForm(forms.Form):
         """Validate the token against existing tokens."""
         try:
             _token = self.cleaned_data.get('token')
+            print "Looking for token: ", _token
             self.token = AccessToken.objects.get(token=_token)
             if self.token.is_valid():
                 return _token
@@ -42,9 +44,10 @@ class GatewayForm(forms.Form):
     def save(self, request):
         """Create a new AccessTokenUse object from the form."""
         assert getattr(self, 'token', None) is not None, "Form token attr is not set"
+        set_request_token(request, self.token.token)
         return self.token.record(
             email=self.cleaned_data.get('email'),
             user_name=self.cleaned_data.get('name'),
-            client_ip=request.META.get('REMOTE_ADDR'),
-            client_user_agent=request.META.get('HTTP_USER_AGENT'),
+            client_ip=request.META.get('REMOTE_ADDR','unknown'),
+            client_user_agent=request.META.get('HTTP_USER_AGENT', 'unknown'),
         )

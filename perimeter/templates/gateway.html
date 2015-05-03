@@ -1,9 +1,10 @@
 <html>
     <head></head>
     <body>
-        <form>
-        {{ csrf_token }}
-        {{ form }}
-        </form>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_ul }}
+        <input type="submit" value="Submit">
+    </form>
     </body>
 </html>

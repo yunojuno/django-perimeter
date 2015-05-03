@@ -3,16 +3,50 @@
 Middleware component of Perimeter app - checks all incoming requests for a
 valid token. See Perimeter docs for more details.
 """
-import logging
-
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed, PermissionDenied
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
-from perimeter.models import AccessToken
-
-logger = logging.getLogger(__name__)
+from perimeter.models import AccessToken, EmptyToken
 
 PERIMETER_SESSION_KEY = getattr(settings, 'PERIMETER_SESSION_KEY', 'perimeter')
+
+
+def bypass_perimeter(request):
+    """Return True if the perimeter can be ignored for the request url.
+
+    Certain views bypass the gateway as they are themselves login pages -
+    specifically the admin site login and the perimeter login itself.
+
+    """
+    return request.path == reverse('perimeter:gateway')
+
+
+def get_request_token(request):
+    """Returns AccessToken if found else EmptyToken."""
+    assert hasattr(request, 'session'), (
+        "Missing session attribute - please check MIDDLEWARE_CLASSES for "
+        "'django.contrib.sessions.middleware.SessionMiddleware'."
+    )
+    token = request.session.get(PERIMETER_SESSION_KEY, None)
+    # NB this method implements caching, so is more performant
+    # than the straight get() alternative
+    return AccessToken.objects.get_access_token(token)
+
+
+def set_request_token(request, token):
+    """Sets the request.session token value.
+
+    Args:
+        token - string, the token value (not the token object, as that is
+            not serializable)
+    """
+    assert hasattr(request, 'session'), (
+        "Missing session attribute - please check MIDDLEWARE_CLASSES for "
+        "'django.contrib.sessions.middleware.SessionMiddleware'."
+    )
+    request.session[PERIMETER_SESSION_KEY] = token
 
 
 class PerimeterAccessMiddleware(object):
@@ -34,32 +68,12 @@ class PerimeterAccessMiddleware(object):
 
     def process_request(self, request):
         """Check user session for token."""
-        assert hasattr(request, 'user'), (
-            "Missing user attribute - please check MIDDLEWARE_CLASSES for "
-            "'django.contrib.auth.middleware.AuthenticationMiddleware'."
-        )
-        assert hasattr(request, 'session'), (
-            "Missing session attribute - please check MIDDLEWARE_CLASSES for "
-            "'django.contrib.sessions.middleware.SessionMiddleware'."
-        )
-        # if the user is authenticated, then let them in regardlesss
-        if request.user.is_authenticated():
+        if bypass_perimeter(request):
             return None
 
-        # if you can't access the admin site you can't create a token - this
-        # wouldn't really work.
-        # TODO: hook up dynamically to admin URLs
-        if request.path[:6] == '/admin':
+        if get_request_token(request).is_valid():
             return None
 
-        token = request.session.get(PERIMETER_SESSION_KEY)
-        if token is None:
-            raise PermissionDenied()
-
-        if not token.is_valid():
-            # it's invalid, so remove it.
-            del request.session[PERIMETER_SESSION_KEY]
-            raise PermissionDenied()
-
-        # we have a token, and it's valid
-        return None
+        # redirect to the gateway for validation,
+        # NB - we don't preserve the original url.
+        return HttpResponseRedirect(reverse('perimeter:gateway'))

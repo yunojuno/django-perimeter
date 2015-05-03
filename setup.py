@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='django-perimeter',
     version='0.2',
-    packages=['perimeter'],
+    packages=['perimeter', 'perimeter.tests', 'perimeter.management.commands'],
     include_package_data=True,
     license='BSD License',
     description='Site-wide perimeter access control for Django projects.',

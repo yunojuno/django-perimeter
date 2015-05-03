@@ -14,6 +14,10 @@ DATABASES = {
     }
 }
 
+# ================= APP SETTINGS =================
+PERIMETER_ENABLED = True
+# ================= / APP SETTINGS ===============
+
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.auth',
@@ -31,6 +35,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'perimeter.middleware.PerimeterAccessMiddleware',
 ]
 
 SECRET_KEY = "something really, really hard to guess goes here."

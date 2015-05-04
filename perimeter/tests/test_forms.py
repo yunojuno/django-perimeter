@@ -4,12 +4,12 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, RequestFactory, override_settings
+from django.utils.timezone import now
 
 from perimeter.forms import GatewayForm
 from perimeter.models import AccessToken, AccessTokenUse
 
-TODAY = datetime.date.today()
-YESTERDAY = TODAY - datetime.timedelta(days=1)
+YESTERDAY = now().date() - datetime.timedelta(days=1)
 
 class GatewayFormTests(TestCase):
 
@@ -54,8 +54,8 @@ class GatewayFormTests(TestCase):
         self.assertTrue(self.form.is_valid())
         au = self.form.save(self.request)
         self.assertTrue(AccessTokenUse.objects.get(), au)
-        self.assertEqual(au.email, self.payload['email'])
-        self.assertEqual(au.name, self.payload['name'])
+        self.assertEqual(au.user_email, self.payload['email'])
+        self.assertEqual(au.user_name, self.payload['name'])
         self.assertEqual(au.token, self.token)
         self.assertEqual(au.client_ip, '127.0.0.1')
         self.assertEqual(au.client_user_agent, 'test_agent')

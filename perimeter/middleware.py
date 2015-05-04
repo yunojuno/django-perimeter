@@ -75,5 +75,7 @@ class PerimeterAccessMiddleware(object):
             return None
 
         # redirect to the gateway for validation,
-        # NB - we don't preserve the original url.
-        return HttpResponseRedirect(reverse('perimeter:gateway'))
+        return HttpResponseRedirect(
+            reverse('perimeter:gateway') +
+            '?next=%s' % request.path
+        )

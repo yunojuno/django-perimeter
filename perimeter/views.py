@@ -1,10 +1,28 @@
 # -*- coding: utf-8 -*-
 # Perimeter app views
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from perimeter.forms import GatewayForm
+
+
+def resolve_return_url(return_url):
+    """Resolve a URL to confirm that it's valid.
+
+    Before redirecting to a return_url, use the resolve function
+    to confirm that it matches a valid view function.
+
+    If the resolver can't find the function, return the only url we
+    know exists - perimeter:gateway
+
+    """
+    try:
+        url = resolve(return_url)
+        return return_url
+    except Resolver404:
+        return reverse('perimeter:gateway')
+
 
 def gateway(request, template_name='gateway.html'):
     """Display gateway form and process access requests.
@@ -19,7 +37,10 @@ def gateway(request, template_name='gateway.html'):
     elif request.method == 'POST':
         form = GatewayForm(request.POST)
         if form.is_valid():
-            usage = form.save(request)
-            return HttpResponseRedirect(reverse('homepage'))
+            form.save(request)
+            return HttpResponseRedirect(
+                resolve_return_url(
+                    request.GET.get('next'))
+            )
 
     return render(request, template_name, {'form': form})

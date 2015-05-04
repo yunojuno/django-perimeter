@@ -26,11 +26,10 @@ class GatewayForm(forms.Form):
         """Validate the token against existing tokens."""
         try:
             _token = self.cleaned_data.get('token')
-            print "Looking for token: ", _token
             self.token = AccessToken.objects.get(token=_token)
-            if self.token.is_valid():
+            if self.token.is_valid:
                 return _token
-            if self.token.has_expired():
+            if self.token.has_expired:
                 raise ValidationError(u"Token has expired", code="expired")
             if not self.token.is_active:
                 raise ValidationError(u"Token is inactive", code="invalid")
@@ -46,7 +45,7 @@ class GatewayForm(forms.Form):
         assert getattr(self, 'token', None) is not None, "Form token attr is not set"
         set_request_token(request, self.token.token)
         return self.token.record(
-            email=self.cleaned_data.get('email'),
+            user_email=self.cleaned_data.get('email'),
             user_name=self.cleaned_data.get('name'),
             client_ip=request.META.get('REMOTE_ADDR','unknown'),
             client_user_agent=request.META.get('HTTP_USER_AGENT', 'unknown'),

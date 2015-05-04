@@ -3,6 +3,7 @@
 import datetime
 
 from django.contrib.auth.models import User, AnonymousUser
+from django.core.cache import cache
 from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase, RequestFactory, override_settings
@@ -21,7 +22,7 @@ from perimeter.models import (
     EmptyToken
 )
 
-TODAY = datetime.date.today()
+TODAY = now().date()
 YESTERDAY = TODAY - datetime.timedelta(days=1)
 TOMORROW = TODAY + datetime.timedelta(days=1)
 
@@ -48,6 +49,14 @@ class AccessTokenManagerTests(TestCase):
         self.assertEqual(token, AccessToken.objects.get())
         self.assertTrue(len(token.token), 10)
 
+    def test_get_access_token(self):
+        """Test the caching works."""
+        token = AccessToken.objects.create_access_token()
+        cache.clear()
+        self.assertIsNone(cache.get(token.cache_key))
+        token2 = AccessToken.objects.get_access_token(token.token)
+        self.assertEqual(token, token2)
+        self.assertIsNotNone(cache.get(token.cache_key))
 
 class AccessTokenTests(TestCase):
 
@@ -81,8 +90,21 @@ class AccessTokenTests(TestCase):
         # but updated_at _is_
         self.assertTrue(at.updated_at > at.created_at)
 
-    def test_generate_random_token(self):
+        self.assertTrue(at.is_valid)
+        self.assertFalse(at.has_expired)
 
+    def test_cache_key(self):
+        token = AccessToken(token="test")
+        self.assertIsNotNone(token.cache_key)
+        self.assertEqual(token.cache_key, AccessToken.get_cache_key("test"))
+
+    def test_cache_management(self):
+        token = AccessToken.objects.create_access_token()
+        self.assertEqual(cache.get(token.cache_key), token)
+        token.delete()
+        self.assertIsNone(cache.get(token.cache_key))
+
+    def test_generate_random_token(self):
         f = AccessToken._meta.get_field('token').max_length
         t1 = AccessToken.random_token_value()
         t2 = AccessToken.random_token_value()
@@ -92,16 +114,16 @@ class AccessTokenTests(TestCase):
     def test_has_expired(self):
         at = AccessToken()
         at.expires_on = YESTERDAY
-        self.assertTrue(at.has_expired())
+        self.assertTrue(at.has_expired)
         at.expires_on = TODAY
-        self.assertFalse(at.has_expired())
+        self.assertFalse(at.has_expired)
         at.expires_on = TOMORROW
-        self.assertFalse(at.has_expired())
+        self.assertFalse(at.has_expired)
 
     def test_is_valid(self):
 
         def assertValidity(active, expires, valid):
-            return AccessToken(is_active=True, expires_on=TOMORROW).is_valid()
+            return AccessToken(is_active=True, expires_on=TOMORROW).is_valid
 
         assertValidity(True, YESTERDAY, False)
         assertValidity(True, TODAY, True)
@@ -115,8 +137,8 @@ class AccessTokenTests(TestCase):
         at = AccessToken(token="test_token").save()
         atu = at.record("hugo@yunojuno.com", "Hugo")
         self.assertEqual(atu, AccessTokenUse.objects.get())
-        self.assertEqual(atu.email, "hugo@yunojuno.com")
-        self.assertEqual(atu.name, "Hugo")
+        self.assertEqual(atu.user_email, "hugo@yunojuno.com")
+        self.assertEqual(atu.user_name, "Hugo")
         self.assertIsNotNone(atu.timestamp, "Hugo")
         self.assertEqual(atu.client_ip, "unknown")
         self.assertEqual(atu.client_user_agent, "unknown")

@@ -4,7 +4,7 @@ import datetime
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.exceptions import MiddlewareNotUsed
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from django.test import TestCase, RequestFactory, override_settings
 
 from perimeter.middleware import (
@@ -31,7 +31,10 @@ class PerimeterMiddlewareTests(TestCase):
         # NB assertRedirects doesn't work!
         resp = self.middleware.process_request(request)
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, reverse('perimeter:gateway'))
+        # use a resolver to strip off any quesrystring params
+        resolver = resolve(resp.url)
+        self.assertEqual(resolver.url_name, 'gateway')
+        self.assertEqual(resolver.namespace, 'perimeter')
 
     def test_bypass_perimeter(self):
         """Perimeter login urls excluded."""

@@ -1,5 +1,5 @@
 """Test app settings."""
-from os import environ
+from os import environ, path
 
 # set the django DEBUG option
 DEBUG = environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
@@ -18,11 +18,18 @@ DATABASES = {
 PERIMETER_ENABLED = True
 # ================= / APP SETTINGS ===============
 
+# NB - this is good for local testing only
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATIC_URL = '/static/'
+STATIC_ROOT = path.abspath(path.join(path.dirname(__file__), '..', 'static'))
+
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.sessions',
+    'django.contrib.staticfiles',
     'perimeter',
     'test_app',
     # uncomment to enable the coverage tests to run
@@ -64,5 +71,5 @@ LOGGING = {
     }
 }
 
-# COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage_reports'
-# COVERAGE_CUSTOM_REPORTS = False
+COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage_reports'
+COVERAGE_CUSTOM_REPORTS = False

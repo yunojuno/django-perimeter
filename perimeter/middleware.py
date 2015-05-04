@@ -29,13 +29,13 @@ def get_request_token(request):
         "Missing session attribute - please check MIDDLEWARE_CLASSES for "
         "'django.contrib.sessions.middleware.SessionMiddleware'."
     )
-    token = request.session.get(PERIMETER_SESSION_KEY, None)
+    token_value = request.session.get(PERIMETER_SESSION_KEY, None)
     # NB this method implements caching, so is more performant
     # than the straight get() alternative
-    return AccessToken.objects.get_access_token(token)
+    return AccessToken.objects.get_access_token(token_value)
 
 
-def set_request_token(request, token):
+def set_request_token(request, token_value):
     """Sets the request.session token value.
 
     Args:
@@ -46,7 +46,7 @@ def set_request_token(request, token):
         "Missing session attribute - please check MIDDLEWARE_CLASSES for "
         "'django.contrib.sessions.middleware.SessionMiddleware'."
     )
-    request.session[PERIMETER_SESSION_KEY] = token
+    request.session[PERIMETER_SESSION_KEY] = token_value
 
 
 class PerimeterAccessMiddleware(object):
@@ -71,7 +71,7 @@ class PerimeterAccessMiddleware(object):
         if bypass_perimeter(request):
             return None
 
-        if get_request_token(request).is_valid():
+        if get_request_token(request).is_valid:
             return None
 
         # redirect to the gateway for validation,

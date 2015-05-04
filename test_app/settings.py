@@ -28,6 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.admin',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'perimeter',
@@ -42,6 +43,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'perimeter.middleware.PerimeterAccessMiddleware',
 ]
 

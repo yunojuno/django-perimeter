@@ -6,7 +6,6 @@ from datetime import date, time, timedelta, datetime
 import random
 
 from django.conf import settings
-from django.contrib.admin import site, ModelAdmin
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import models
@@ -28,6 +27,7 @@ class EmptyToken(object):
     they return an object that can be used like an AccessToken but that
     is always invalid.
     """
+    @property
     def is_valid(self):
         return False
 
@@ -168,12 +168,6 @@ def on_delete_access_token(sender, instance, **kwargs):
     cache.delete(instance.cache_key)
 
 
-class AccessTokenAdmin(ModelAdmin):
-
-    raw_id_fields = ('created_by',)
-    list_display = ('token', 'expires_on', 'is_active', 'created_at', 'created_by')
-
-
 class AccessTokenUse(models.Model):
     """Audit record used to log whenever an access token is used."""
     token = models.ForeignKey(AccessToken)
@@ -204,10 +198,3 @@ class AccessTokenUse(models.Model):
         self.timestamp = self.timestamp or now()
         super(AccessTokenUse, self).save(*args, **kwargs)
         return self
-
-
-class AccessTokenUseAdmin(ModelAdmin):
-    list_display = ('token', 'user_name', 'timestamp', 'client_ip')
-
-site.register(AccessToken, AccessTokenAdmin)
-site.register(AccessTokenUse, AccessTokenUseAdmin)

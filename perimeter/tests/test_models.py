@@ -32,7 +32,7 @@ class EmptyTokenTests(TestCase):
     def test_is_valid(self):
         """EmptyToken should always be invalid."""
         token = EmptyToken()
-        self.assertFalse(token.is_valid())
+        self.assertFalse(token.is_valid)
 
 
 class AccessTokenManagerTests(TestCase):

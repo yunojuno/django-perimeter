@@ -1,2 +1,2 @@
-include README.md
-recursive-include django_perimeter *.py
+include README.rst
+recursive-include perimeter *.py

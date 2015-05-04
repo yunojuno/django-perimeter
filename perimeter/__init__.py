@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Perimeter is an app that provides middleware (and associated models etc.) that
 allow you to 'secure the perimeter' of your django site outside of any existing

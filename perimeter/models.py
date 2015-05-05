@@ -84,7 +84,12 @@ class AccessToken(models.Model):
     objects = AccessTokenManager()
 
     def __unicode__(self):
-        return u"%s" % self.token
+        return (
+            u"%s - %s" % (
+                self.token,
+                'valid' if self.is_valid else 'invalid'
+            )
+        )
 
     def __str__(self):
         return self.__unicode__().encode('UTF-8')

@@ -1,7 +1,7 @@
 Django Perimeter
 ================
 
-Perimeter is an app that provides middleware that allows you to 'secure the perimeter' of your django site outside of any existing auth process that you have.
+Perimeter is a Django app that provides middleware that allows you to 'secure the perimeter' of your django site outside of any existing auth process that you have.
 
 Why?
 ----
@@ -12,16 +12,17 @@ Sometimes, however, you want to simply secure the entire site to prevent prying 
 
 That's when you need Perimeter.
 
-Perimeter provides simple tokenised access control over your entire Django site. It consists of two parts: admin site functionality to create new access tokens, and middleware to control the access based on said token.
+Perimeter provides simple tokenised access control over your entire Django site (everything, including the admin site and login pages).
 
 How does it work?
 -----------------
 
 Once you have installed and enabled Perimeter, everyone requiring access will need an authorisation token (not authentication - there is nothing inherent in Perimeter to prevent people swapping / sharing tokens - that is an accepted use case).
 
-To create a new token you need to head to the admin site, and create a new token under the Perimeter app. If you have ``PERIMETER_ENABLED`` set to True already you won't be able to access the admin site (it covers everything except for the perimeter 'gateway' form), and so there is a management command (``create_access_token``) that you can use to create your first token. (This is analagous to the Django setup process where it prompts you to create a superuser.)
+Perimeter runs as middleware that will inspect the user's ``session`` for a
+token. If they have a valid token, then they continue to use the site uninterrupted. If they do not have a token, or the token is invalid (expired or set to inactive), then they are redirected to the Perimeter 'Gateway', where they must enter a valid token, along with their name and email (for auditing purposes - this is stored in the database).
 
-If someone visits any page on the site they will be redirected to the 'Gateway' page where they need to input the token, and their details (for auditing purposes). Once set the token is stored in their session and they can then access the site as normal.
+To create a new token you need to head to the admin site, and create a new token under the Perimeter app. If you have ``PERIMETER_ENABLED`` set to True already you won't be able to access the admin site (as Perimeter covers everything except for the perimeter 'gateway' form), and so there is a management command (``create_access_token``) that you can use to create your first token. (This is analagous to the Django setup process where it prompts you to create a superuser.)
 
 Setup
 -----
@@ -29,3 +30,10 @@ Setup
 1. Add 'perimeter' to your installed apps.
 2. Add 'perimeter.middleware.PerimeterAccessMiddleware' to the list of MIDDLEWARE_CLASSES
 3. Add PERIMETER_ENABLED=True to your settings file. This setting can be used to enable or disable Perimeter in different environments.
+
+NB The middleware must be added **after** the Django session middleware.
+
+Tests
+-----
+
+The app has a suite of tests, and a ``tox.ini`` file configured to run them when using ``tox`` (recommended).

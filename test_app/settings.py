@@ -30,8 +30,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'perimeter',
     'test_app',
-    # uncomment to enable the coverage tests to run
-    'django_coverage',
 )
 
 # none required, but need to explicitly state this for Django 1.7
@@ -69,7 +67,3 @@ LOGGING = {
         },
     }
 }
-
-# ============ coverage settings ===================
-COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage_reports'
-COVERAGE_CUSTOM_REPORTS = False

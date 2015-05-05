@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-Django models for the Perimeter app.
-"""
+"""Django models for the Perimeter app."""
 from datetime import date, time, timedelta, datetime
 import random
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils.timezone import now
+from django.utils.timezone import now, make_aware
 
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
@@ -22,18 +19,21 @@ def default_expiry():
 
 
 class EmptyToken(object):
+
     """Token-like object that will always return is_valid() == False.
 
     EmptyToken objects are a bit like Django's AnonymousUser model -
     they return an object that can be used like an AccessToken but that
     is always invalid.
     """
+
     @property
     def is_valid(self):
         return False
 
 
 class AccessTokenManager(models.Manager):
+
     """Custom model manager for AccessTokens."""
 
     def create_access_token(self, **kwargs):
@@ -69,9 +69,9 @@ class AccessTokenManager(models.Manager):
 
 
 class AccessToken(models.Model):
-    """
-    A token that allows a user entry to the site via Perimeter.
-    """
+
+    """A token that allows a user entry to the site via Perimeter."""
+
     token = models.CharField(max_length=10, unique=True)
     is_active = models.BooleanField(default=True)
     # NB pass in a callable, not the result of the callable, see:
@@ -133,10 +133,11 @@ class AccessToken(models.Model):
     @property
     def seconds_to_expiry(self):
         """Retun the number of seconds till expiry (used for caching)."""
-        return int(
-            (datetime.combine(self.expires_on, time.min) - now())
-            .total_seconds()
+        expires_at = make_aware(
+            datetime.combine(self.expires_on, time.min),
+            now().tzinfo
         )
+        return int((expires_at - now()).total_seconds())
 
     @property
     def has_expired(self):
@@ -175,12 +176,17 @@ def on_delete_access_token(sender, instance, **kwargs):
 
 
 class AccessTokenUse(models.Model):
+
     """Audit record used to log whenever an access token is used."""
+
     token = models.ForeignKey(AccessToken)
     user_email = models.EmailField(
-        verbose_name="Token used by (email)")
-    user_name = models.CharField(max_length=100,
-        verbose_name="Token used by (name)")
+        verbose_name="Token used by (email)"
+    )
+    user_name = models.CharField(
+        max_length=100,
+        verbose_name="Token used by (name)"
+    )
     client_ip = models.CharField(
         max_length=15,
         verbose_name='IP address',
@@ -200,7 +206,7 @@ class AccessTokenUse(models.Model):
         return self.__unicode__().encode('UTF-8')
 
     def save(self, *args, **kwargs):
-        "Set the timestamp and save the object."
+        """Set the timestamp and save the object."""
         self.timestamp = self.timestamp or now()
         super(AccessTokenUse, self).save(*args, **kwargs)
         return self

@@ -4,9 +4,11 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from perimeter.middleware import set_request_token
-from perimeter.models import AccessToken, AccessTokenUse
+from perimeter.models import AccessToken
+
 
 class GatewayForm(forms.Form):
+
     """Form used to process a perimeter request.
 
     This form does **not** validate the token, it only
@@ -18,6 +20,7 @@ class GatewayForm(forms.Form):
         else:
 
     """
+
     token = forms.CharField(required=True, max_length=100)
     email = forms.EmailField(required=True)
     name = forms.CharField(required=True, max_length=100)
@@ -42,11 +45,11 @@ class GatewayForm(forms.Form):
 
     def save(self, request):
         """Create a new AccessTokenUse object from the form."""
-        assert getattr(self, 'token', None) is not None, "Form token attr is not set"
+        assert getattr(self, 'token', None) is not None, "Form token attr is not set"  # noqa
         set_request_token(request, self.token.token)
         return self.token.record(
             user_email=self.cleaned_data.get('email'),
             user_name=self.cleaned_data.get('name'),
-            client_ip=request.META.get('REMOTE_ADDR','unknown'),
+            client_ip=request.META.get('REMOTE_ADDR', 'unknown'),
             client_user_agent=request.META.get('HTTP_USER_AGENT', 'unknown'),
         )

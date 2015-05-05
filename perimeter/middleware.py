@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Middleware component of Perimeter app - checks all incoming requests for a
-valid token. See Perimeter docs for more details.
+Middleware component of Perimeter app.
+
+Checks all incoming requests for a valid token.
+See Perimeter docs for more details.
 """
-from django.conf import settings
-from django.core.exceptions import MiddlewareNotUsed, PermissionDenied
+from django.core.exceptions import MiddlewareNotUsed
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
-from perimeter.models import AccessToken, EmptyToken
-from perimeter.settings import PERIMETER_SESSION_KEY
+from perimeter.models import AccessToken
+from perimeter.settings import PERIMETER_SESSION_KEY, PERIMETER_ENABLED
 
 
 def bypass_perimeter(request):
@@ -23,7 +24,7 @@ def bypass_perimeter(request):
 
 
 def get_request_token(request):
-    """Returns AccessToken if found else EmptyToken."""
+    """Return AccessToken if found else EmptyToken."""
     assert hasattr(request, 'session'), (
         "Missing session attribute - please check MIDDLEWARE_CLASSES for "
         "'django.contrib.sessions.middleware.SessionMiddleware'."
@@ -35,7 +36,7 @@ def get_request_token(request):
 
 
 def set_request_token(request, token_value):
-    """Sets the request.session token value.
+    """Set the request.session token value.
 
     Args:
         token - string, the token value (not the token object, as that is
@@ -49,20 +50,22 @@ def set_request_token(request, token_value):
 
 
 class PerimeterAccessMiddleware(object):
-    """
-    Middleware used to detect whether user can access site or not.
+
+    """Middleware used to detect whether user can access site or not.
 
     This middleware will be disabled if the PERIMETER_ENABLED setting does not
     exist in django settings, or is False.
+
     """
+
     def __init__(self):
         """
         Disable middleware if PERIMETER_ENABLED setting not True.
 
-        Raises MiddlewareNotUsed exception if the PERIMETER_ENABLED setting
-        is not True - this is used by Django framework to remove the middleware.
+        Raises MiddlewareNotUsed exception if PERIMETER_ENABLED=False
+        - this is used by Django framework to remove the middleware.
         """
-        if not getattr(settings, 'PERIMETER_ENABLED', False):
+        if not PERIMETER_ENABLED:
             raise MiddlewareNotUsed()
 
     def process_request(self, request):

@@ -11,8 +11,7 @@ class AccessTokenAdmin(ModelAdmin):
     list_display = ('token', 'expires_on', 'is_active', 'created_at', 'created_by')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        Presets the 'created_by' field to the current user.
+        """Preset the 'created_by' field to the current user.
 
         Taken from http://stackoverflow.com/a/5633217
         """

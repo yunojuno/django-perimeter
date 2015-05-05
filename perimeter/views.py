@@ -18,7 +18,7 @@ def resolve_return_url(return_url):
 
     """
     try:
-        url = resolve(return_url)
+        resolve(return_url)
         return return_url
     except Resolver404:
         return reverse('perimeter:gateway')

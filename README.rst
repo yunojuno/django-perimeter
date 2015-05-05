@@ -33,6 +33,24 @@ Setup
 
 NB The middleware must be added **after** the Django session middleware.
 
+.. code:: python
+
+    INSTALLED_APPS = (
+        ...
+        'django.contrib.sessions',
+        'perimeter',
+        ...
+    )
+
+    MIDDLEWARE_CLASSES = [
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        ...
+        'perimeter.middleware.PerimeterAccessMiddleware',
+        ...
+    ]
+
 Tests
 -----
 

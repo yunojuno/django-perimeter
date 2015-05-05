@@ -21,6 +21,7 @@ from perimeter.models import (
     default_expiry,
     EmptyToken
 )
+from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
 TODAY = now().date()
 YESTERDAY = TODAY - datetime.timedelta(days=1)
@@ -60,11 +61,10 @@ class AccessTokenManagerTests(TestCase):
 
 class AccessTokenTests(TestCase):
 
-    @override_settings(PERIMETER_DEFAULT_EXPIRY=1)
     def test_default_expiry(self):
         self.assertEqual(
             default_expiry(),
-            now().date() + datetime.timedelta(days=1)
+            now().date() + datetime.timedelta(days=PERIMETER_DEFAULT_EXPIRY)
         )
 
     def test_attrs(self):

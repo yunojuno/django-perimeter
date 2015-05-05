@@ -9,8 +9,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from perimeter.models import AccessToken, EmptyToken
-
-PERIMETER_SESSION_KEY = getattr(settings, 'PERIMETER_SESSION_KEY', 'perimeter')
+from perimeter.settings import PERIMETER_SESSION_KEY
 
 
 def bypass_perimeter(request):

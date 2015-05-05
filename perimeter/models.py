@@ -13,11 +13,12 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.timezone import now
 
+from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
+
 
 def default_expiry():
     """Return the default expiry date."""
-    days = getattr(settings, 'PERIMETER_DEFAULT_EXPIRY', 7)
-    return (now() + timedelta(days=days)).date()
+    return (now() + timedelta(days=PERIMETER_DEFAULT_EXPIRY)).date()
 
 
 class EmptyToken(object):
@@ -83,7 +84,12 @@ class AccessToken(models.Model):
     objects = AccessTokenManager()
 
     def __unicode__(self):
-        return u"%s" % self.token
+        return (
+            u"%s - %s" % (
+                self.token,
+                'valid' if self.is_valid else 'invalid'
+            )
+        )
 
     def __str__(self):
         return self.__unicode__().encode('UTF-8')

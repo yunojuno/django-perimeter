@@ -24,7 +24,7 @@ def resolve_return_url(return_url):
         return reverse('perimeter:gateway')
 
 
-def gateway(request, template_name='gateway.html'):
+def gateway(request, template_name='perimeter/gateway.html'):
     """Display gateway form and process access requests.
 
     When the PerimeterAccessMiddleware catches an unvalidated

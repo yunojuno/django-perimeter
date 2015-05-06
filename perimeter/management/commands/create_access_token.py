@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 """Management command to create a new AccessToken."""
-import logging
-
 from django.core.management.base import BaseCommand
 from optparse import make_option
 
 from perimeter.models import AccessToken
-
-logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -26,8 +22,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         if options.get('token'):
-            token = AccessToken.objects.create_access_token(token=options.get('token'))
+            token = AccessToken.objects.create_access_token(
+                token=options.get('token')
+            )
         else:
             token = AccessToken.objects.create_access_token()
 
-        logger.info('Created new access token: "%s"', token.token)
+        print ('Created new access token: "%s"' % token.token)

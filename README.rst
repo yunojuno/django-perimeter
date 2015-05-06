@@ -29,27 +29,43 @@ Setup
 
 1. Add 'perimeter' to your installed apps.
 2. Add 'perimeter.middleware.PerimeterAccessMiddleware' to the list of MIDDLEWARE_CLASSES
-3. Add PERIMETER_ENABLED=True to your settings file. This setting can be used to enable or disable Perimeter in different environments.
+3. Add the perimeter urls - NB must use the 'perimeter' namespace
+4. Add PERIMETER_ENABLED=True to your settings file. This setting can be used to enable or disable Perimeter in different environments.
 
-NB The middleware must be added **after** the Django session middleware.
+
+Settings:
 
 .. code:: python
 
+    PERIMETER_ENABLED = True
+
     INSTALLED_APPS = (
         ...
-        'django.contrib.sessions',
         'perimeter',
         ...
     )
 
+    # perimeter must appear after sessions middleware as it relies on there
+    # being a valid request.session
     MIDDLEWARE_CLASSES = [
-        'django.middleware.common.CommonMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
         ...
+        'django.contrib.sessions.middleware.SessionMiddleware',
         'perimeter.middleware.PerimeterAccessMiddleware',
         ...
     ]
+
+Site urls:
+
+.. code:: python
+
+    # in site urls
+    urlpatterns = patterns(
+        '',
+        ...
+        # NB you must include the namespace, as it is referenced in the app
+        url(r'^perimeter/', include('perimeter.urls', namespace='perimeter')),
+        ...
+    )
 
 Tests
 -----

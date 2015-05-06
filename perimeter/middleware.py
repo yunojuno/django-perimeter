@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from perimeter.models import AccessToken, EmptyToken
-from perimeter.settings import PERIMETER_SESSION_KEY
+from perimeter.settings import PERIMETER_SESSION_KEY, PERIMETER_ENABLED
 
 
 def bypass_perimeter(request):
@@ -62,7 +62,7 @@ class PerimeterAccessMiddleware(object):
         Raises MiddlewareNotUsed exception if the PERIMETER_ENABLED setting
         is not True - this is used by Django framework to remove the middleware.
         """
-        if not getattr(settings, 'PERIMETER_ENABLED', False):
+        if PERIMETER_ENABLED is False:
             raise MiddlewareNotUsed()
 
     def process_request(self, request):

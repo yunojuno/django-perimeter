@@ -1,10 +1,22 @@
 <html>
-    <head></head>
-    <body>
+
+<head>
+    <style>
+    li {
+        padding-bottom: 4px;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Perimeter Gateway</h1>
+    <p>In order to access this site you will need a valid <strong>access token</strong>.</p>
+    <p>Please contact the site administrator if you do not already have one.</p>
     <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_ul }}
+        {% csrf_token %} {{ form.as_ul }}
         <input type="submit" value="Submit">
     </form>
-    </body>
+    <p><small>In addition to your email and name, your browser user-agent and IP address will be recorded when you validate your token.</small></p>
+</body>
+
 </html>

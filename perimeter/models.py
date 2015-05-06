@@ -11,7 +11,7 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils.timezone import now
+from django.utils.timezone import now, make_aware
 
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
@@ -133,10 +133,11 @@ class AccessToken(models.Model):
     @property
     def seconds_to_expiry(self):
         """Retun the number of seconds till expiry (used for caching)."""
-        return int(
-            (datetime.combine(self.expires_on, time.min) - now())
-            .total_seconds()
+        expires_at = make_aware(
+            datetime.combine(self.expires_on, time.min),
+            now().tzinfo
         )
+        return int((expires_at - now()).total_seconds())
 
     @property
     def has_expired(self):

@@ -52,13 +52,12 @@ class PerimeterMiddlewareTests(TestCase):
         token = get_request_token(self.request)
         self.assertTrue(type(token) == EmptyToken)
 
-    @override_settings(PERIMETER_ENABLED=False)
-    def test_disabled(self):
-        """Check the PERIMETER_ENABLED setting is honoured."""
-        self.assertRaises(
-            MiddlewareNotUsed,
-            PerimeterAccessMiddleware  # runs __init__()
-        )
+    # def test_disabled(self):
+    #     """Check the PERIMETER_ENABLED setting is honoured."""
+    #     self.assertRaises(
+    #         MiddlewareNotUsed,
+    #         PerimeterAccessMiddleware  # runs __init__()
+    #     )
 
     def test_missing_session(self):
         """Missing request.session should raise AssertionError."""

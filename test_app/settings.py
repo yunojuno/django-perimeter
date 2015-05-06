@@ -5,6 +5,8 @@ from os import environ, path
 # set the django DEBUG option
 DEBUG = True
 
+PERIMETER_ENABLED=True
+
 ROOT_URLCONF = 'test_app.urls'
 
 # this isn't used, but Django likes having something here for running the tests

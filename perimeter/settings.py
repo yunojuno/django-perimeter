@@ -35,3 +35,7 @@ PERIMETER_ENABLED = get_setting('PERIMETER_ENABLED', False, cast_func=CAST_AS_BO
 PERIMETER_SESSION_KEY = get_setting('PERIMETER_SESSION_KEY', "perimeter")
 # default expiry, in days, of a token
 PERIMETER_DEFAULT_EXPIRY = get_setting('PERIMETER_DEFAULT_EXPIRY', 7, cast_func=CAST_AS_INT)
+
+if settings.DEBUG:
+    print "PERIMETER_ENABLED: ", PERIMETER_ENABLED
+    print "PERIMETER_DEFAULT_EXPIRY: ", PERIMETER_DEFAULT_EXPIRY

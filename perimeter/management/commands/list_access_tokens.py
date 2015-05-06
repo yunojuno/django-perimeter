@@ -12,6 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        logger.info(u"Listing all tokens:")
+        print (u"Listing all tokens:")
         for token in AccessToken.objects.all():
             print (token)

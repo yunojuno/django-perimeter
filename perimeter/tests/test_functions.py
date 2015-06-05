@@ -2,9 +2,7 @@
 # perimeter function tests
 from os import environ
 
-from django.conf import settings
-
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase
 
 from perimeter.settings import get_setting, CAST_AS_INT, CAST_AS_BOOL
 
@@ -17,7 +15,7 @@ class SettingsTests(TestCase):
         self.assertTrue(CAST_AS_BOOL("True"))
         self.assertTrue(CAST_AS_BOOL("true"))
         # special case: 1 == True
-        self.assertFalse(CAST_AS_BOOL(1))
+        self.assertTrue(CAST_AS_BOOL(1))
 
         self.assertFalse(CAST_AS_BOOL(False))
         self.assertFalse(CAST_AS_BOOL(None))

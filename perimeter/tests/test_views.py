@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # perimeter view tests
 from django.core.urlresolvers import reverse
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory
 
 from perimeter.models import AccessToken, AccessTokenUse
 from perimeter.views import resolve_return_url, gateway
@@ -15,10 +15,9 @@ class PerimeterViewTests(TestCase):
 
     def test_display_gateway_GET_200(self):
         """GET on the perimeter:gateway should work."""
-        request = self.factory.get(self.url)
-        response = gateway(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'gateway.html')
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'perimeter/gateway.html')
 
     def test_display_gateway_POST_302(self):
         """POST on the perimeter:gateway should work."""

@@ -17,8 +17,7 @@ class SettingsTests(TestCase):
         self.assertTrue(CAST_AS_BOOL("True"))
         self.assertTrue(CAST_AS_BOOL("true"))
         # special case: 1 == True
-        self.assertFalse(CAST_AS_BOOL(1))
-
+        self.assertTrue(CAST_AS_BOOL(1))
         self.assertFalse(CAST_AS_BOOL(False))
         self.assertFalse(CAST_AS_BOOL(None))
         self.assertFalse(CAST_AS_BOOL("1"))

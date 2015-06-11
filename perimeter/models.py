@@ -43,6 +43,7 @@ class AccessTokenManager(models.Manager):
         # token value, but it is considered so unlikely as to be
         # acceptable.
         kwargs['token'] = kwargs.get('token', AccessToken.random_token_value())
+        kwargs['expires_on'] = kwargs.get('expires_on', default_expiry())
         return AccessToken(**kwargs).save()
 
     def get_access_token(self, token_value):

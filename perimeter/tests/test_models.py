@@ -44,6 +44,13 @@ class AccessTokenManagerTests(TestCase):
         self.assertEqual(token, AccessToken.objects.get())
         self.assertTrue(token, 'x')
 
+    def test_create_with_expires(self):
+        """If an expires is passed in to create_access_token, it's used."""
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        token = AccessToken.objects.create_access_token(expires_on=tomorrow)
+        self.assertEqual(token, AccessToken.objects.get())
+        self.assertTrue(token.expires_on, tomorrow)
+
     def test_create_without_token(self):
         """If no token is passed in to create_access_token, a random one is used."""
         token = AccessToken.objects.create_access_token()

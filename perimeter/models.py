@@ -73,7 +73,7 @@ class AccessToken(models.Model):
     """
     A token that allows a user entry to the site via Perimeter.
     """
-    token = models.CharField(max_length=10, unique=True)
+    token = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     # NB pass in a callable, not the result of the callable, see:
     # http://stackoverflow.com/a/29549675/45698

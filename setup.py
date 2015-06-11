@@ -17,6 +17,9 @@ setup(
     url='https://github.com/yunojuno/django-perimeter',
     author='Hugo Rodger-Brown',
     author_email='hugo@yunojuno.com',
+    install_requires=[
+        'Django>=1.8',
+    ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

@@ -23,9 +23,9 @@ def get_setting(setting_name, default_value, cast_func=lambda x: x):
         default_value: value to use if the setting_name is not found
 
     """
-    return cast_func (
-       environ.get(setting_name) or
-       getattr(settings, setting_name, default_value)
+    return cast_func(
+        environ.get(setting_name) or
+        getattr(settings, setting_name, default_value)
     )
 
 

@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 # perimeter tests
-import datetime
+from datetime import datetime, date, time, timedelta
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase, RequestFactory, override_settings
-from django.utils.timezone import now
+from django.utils.timezone import (
+    now,
+    is_aware,
+    is_naive,
+    make_aware,
+    get_current_timezone
+)
 
 from perimeter.forms import GatewayForm
 from perimeter.middleware import (
@@ -24,8 +30,8 @@ from perimeter.models import (
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
 TODAY = now().date()
-YESTERDAY = TODAY - datetime.timedelta(days=1)
-TOMORROW = TODAY + datetime.timedelta(days=1)
+YESTERDAY = TODAY - timedelta(days=1)
+TOMORROW = TODAY + timedelta(days=1)
 
 
 class EmptyTokenTests(TestCase):
@@ -46,7 +52,7 @@ class AccessTokenManagerTests(TestCase):
 
     def test_create_with_expires(self):
         """If an expires is passed in to create_access_token, it's used."""
-        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        tomorrow = date.today() + timedelta(days=1)
         token = AccessToken.objects.create_access_token(expires_on=tomorrow)
         self.assertEqual(token, AccessToken.objects.get())
         self.assertTrue(token.expires_on, tomorrow)
@@ -71,7 +77,7 @@ class AccessTokenTests(TestCase):
     def test_default_expiry(self):
         self.assertEqual(
             default_expiry(),
-            now().date() + datetime.timedelta(days=PERIMETER_DEFAULT_EXPIRY)
+            now().date() + timedelta(days=PERIMETER_DEFAULT_EXPIRY)
         )
 
     def test_attrs(self):
@@ -126,6 +132,32 @@ class AccessTokenTests(TestCase):
         self.assertFalse(at.has_expired)
         at.expires_on = TOMORROW
         self.assertFalse(at.has_expired)
+
+    def test_seconds_to_expiry(self):
+        "Test that it handles naive and tz-aware times"
+
+        with self.settings(USE_TZ=False):
+            at = AccessToken(expires_on=TOMORROW)
+            expires_at = datetime.combine(at.expires_on, time.min)
+            self.assertTrue(is_naive(expires_at))
+            self.assertTrue(is_naive(now()))
+            self.assertEqual(
+                at.seconds_to_expiry,
+                int((expires_at - now()).total_seconds())
+            )
+
+        with self.settings(USE_TZ=True):
+            at = AccessToken(expires_on=TOMORROW)
+            expires_at = make_aware(
+                datetime.combine(at.expires_on, time.min),
+                get_current_timezone()
+            )
+            self.assertTrue(is_aware(expires_at))
+            self.assertTrue(is_aware(now()))
+            self.assertEqual(
+                at.seconds_to_expiry,
+                int((expires_at - now()).total_seconds())
+            )
 
     def test_is_valid(self):
 

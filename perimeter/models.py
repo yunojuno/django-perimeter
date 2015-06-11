@@ -10,7 +10,7 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils.timezone import now, make_aware, is_naive
+from django.utils.timezone import now, make_aware, is_naive, is_aware, get_current_timezone
 
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
@@ -133,21 +133,12 @@ class AccessToken(models.Model):
     @property
     def seconds_to_expiry(self):
         """Return the number of seconds till expiry (used for caching)."""
-
-        expires_at = make_aware(
-            datetime.combine(self.expires_on, time.min),
-            now().tzinfo
-        )
-        if is_naive(expires_at):
-            return int((expires_at - now()).total_seconds())
-        else:
-            # Django 1.8 will automagically localize dates even if
-            # now().tzinfo is None, in which case this would fail if
-            # we don't localise now() - sounds crazy, I know.
-            # 1.8 - https://github.com/django/django/blob/1.8c1/django/utils/timezone.py#L354
-            # 1.7 - https://github.com/django/django/blob/1.7.8/django/utils/timezone.py#L352
-            now_ = make_aware(now())
-            return int((expires_at - now_).total_seconds())
+        expires_at = datetime.combine(self.expires_on, time.min)
+        if settings.USE_TZ and is_naive(expires_at):
+            expires_at = make_aware(expires_at, get_current_timezone())
+        elif not settings.USE_TZ and is_aware(expires_at):
+            expires_at = make_naive(expires_at)
+        return int((expires_at - now()).total_seconds())
 
     @property
     def has_expired(self):

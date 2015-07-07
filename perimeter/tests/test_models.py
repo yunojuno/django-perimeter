@@ -2,11 +2,11 @@
 # perimeter tests
 from datetime import datetime, date, time, timedelta
 
-from django.contrib.auth.models import User, AnonymousUser
+# from django.contrib.auth.models import User, AnonymousUser
 from django.core.cache import cache
-from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
-from django.core.urlresolvers import reverse
-from django.test import TestCase, RequestFactory, override_settings
+# from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
+# from django.core.urlresolvers import reverse
+from django.test import TestCase  # , RequestFactory, override_settings
 from django.utils.timezone import (
     now,
     is_aware,
@@ -15,12 +15,6 @@ from django.utils.timezone import (
     get_current_timezone
 )
 
-from perimeter.forms import GatewayForm
-from perimeter.middleware import (
-    PerimeterAccessMiddleware,
-    bypass_perimeter,
-    get_request_token
-)
 from perimeter.models import (
     AccessToken,
     AccessTokenUse,
@@ -72,6 +66,7 @@ class AccessTokenManagerTests(TestCase):
         self.assertEqual(token, token2)
         self.assertIsNotNone(cache.get(token.cache_key))
 
+
 class AccessTokenTests(TestCase):
 
     def test_default_expiry(self):
@@ -105,6 +100,27 @@ class AccessTokenTests(TestCase):
 
         self.assertTrue(at.is_valid)
         self.assertFalse(at.has_expired)
+
+    def test_str(self):
+        # test unicode, str
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+        at = AccessToken(token="foobar", expires_on=today, is_active=True)
+        self.assertEqual(
+            unicode(at),
+            u"foobar - valid until %s" % today
+        )
+        at.is_active = False
+        self.assertEqual(
+            unicode(at),
+            u"foobar - inactive"
+        )
+        at.is_active = True
+        at.expires_on = yesterday
+        self.assertEqual(
+            unicode(at),
+            u"foobar - expired on %s" % yesterday
+        )
 
     def test_cache_key(self):
         token = AccessToken(token="test")
@@ -181,6 +197,7 @@ class AccessTokenTests(TestCase):
         self.assertIsNotNone(atu.timestamp, "Hugo")
         self.assertEqual(atu.client_ip, "unknown")
         self.assertEqual(atu.client_user_agent, "unknown")
+
 
 class AccesTokenUseTests(TestCase):
     pass

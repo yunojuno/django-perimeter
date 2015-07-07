@@ -84,12 +84,26 @@ class AccessToken(models.Model):
     objects = AccessTokenManager()
 
     def __unicode__(self):
-        return (
-            u"%s - %s" % (
-                self.token,
-                'valid' if self.is_valid else 'invalid'
+        if self.is_valid:
+            return (
+                u"%s - valid until %s" % (
+                    self.token,
+                    self.expires_on
+                )
             )
-        )
+        elif self.is_active is False:
+            return (
+                u"%s - inactive" % self.token
+            )
+        elif self.has_expired:
+            return (
+                u"%s - expired on %s" % (
+                    self.token,
+                    self.expires_on
+                )
+            )
+        else:
+            return (u"%s - invalid" % self.token)
 
     def __str__(self):
         return self.__unicode__().encode('UTF-8')

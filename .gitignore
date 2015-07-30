@@ -4,3 +4,6 @@
 local_settings.py
 static
 delme
+.coverage
+.tox/
+django_perimeter.egg-info/

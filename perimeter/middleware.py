@@ -9,17 +9,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from perimeter.models import AccessToken, EmptyToken
-from perimeter.settings import PERIMETER_SESSION_KEY, PERIMETER_ENABLED
-
-
-def bypass_perimeter(request):
-    """Return True if the perimeter can be ignored for the request url.
-
-    Certain views bypass the gateway as they are themselves login pages -
-    specifically the admin site login and the perimeter login itself.
-
-    """
-    return request.path == reverse('perimeter:gateway')
+from perimeter.settings import (
+    PERIMETER_SESSION_KEY,
+    PERIMETER_ENABLED,
+    PERIMETER_BYPASS_FUNCTION as bypass_perimeter
+)
 
 
 def get_request_token(request):

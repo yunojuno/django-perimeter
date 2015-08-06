@@ -36,7 +36,7 @@ class PerimeterMiddlewareTests(TestCase):
         self.assertEqual(resolver.url_name, 'gateway')
         self.assertEqual(resolver.namespace, 'perimeter')
 
-    def test_bypass_perimeter(self):
+    def test_bypass_perimeter_default(self):
         """Perimeter login urls excluded."""
         request = self.factory.get('/')
         self.assertFalse(bypass_perimeter(request))
@@ -51,13 +51,6 @@ class PerimeterMiddlewareTests(TestCase):
     def test_get_request_token_empty(self):
         token = get_request_token(self.request)
         self.assertTrue(type(token) == EmptyToken)
-
-    # def test_disabled(self):
-    #     """Check the PERIMETER_ENABLED setting is honoured."""
-    #     self.assertRaises(
-    #         MiddlewareNotUsed,
-    #         PerimeterAccessMiddleware  # runs __init__()
-    #     )
 
     def test_missing_session(self):
         """Missing request.session should raise AssertionError."""

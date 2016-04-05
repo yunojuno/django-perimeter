@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # perimeter tests
 import datetime
+from urlparse import urlparse
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.exceptions import MiddlewareNotUsed
@@ -27,7 +28,8 @@ class PerimeterMiddlewareTests(TestCase):
         self.request.session = {}
         self.middleware = PerimeterAccessMiddleware()
 
-    def _assertRedirectsToGateway(self, request):
+    def _assertRedirectsToGateway(self, request, query=None):
+        query = query or "next=%2F"
         # NB assertRedirects doesn't work!
         resp = self.middleware.process_request(request)
         self.assertEqual(resp.status_code, 302)
@@ -35,6 +37,7 @@ class PerimeterMiddlewareTests(TestCase):
         resolver = resolve(resp.url)
         self.assertEqual(resolver.url_name, 'gateway')
         self.assertEqual(resolver.namespace, 'perimeter')
+        self.assertEqual(urlparse(resp.url).query, query)
 
     def test_bypass_perimeter_default(self):
         """Perimeter login urls excluded."""
@@ -73,7 +76,27 @@ class PerimeterMiddlewareTests(TestCase):
 
     def test_valid_token(self):
         """AnonymousUser with a valid session token should pass through."""
-        at = AccessToken(token="foobar").save()
+        AccessToken(token="foobar").save()
         self.request.user = AnonymousUser()
         self.request.session['token'] = "foobar"
         self._assertRedirectsToGateway(self.request)
+
+    def test_next_query_string_set(self):
+        """Check `next` query string param is properly encoded"""
+
+        # Simple path
+        request = self.factory.get('/somepath/')
+        request.user = AnonymousUser()
+        request.session = {}
+        self._assertRedirectsToGateway(
+            request, query="next=%2Fsomepath%2F"
+        )
+
+        # Path with query string
+        request = self.factory.get('/somepath/?important=param')
+        request.user = AnonymousUser()
+        request.session = {}
+        self._assertRedirectsToGateway(
+            request,
+            query="next=%2Fsomepath%2F%3Fimportant%3Dparam"
+        )

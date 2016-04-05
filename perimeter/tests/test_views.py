@@ -8,7 +8,6 @@ from perimeter.views import resolve_return_url, gateway
 
 
 class PerimeterViewTests(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.url = reverse('perimeter:gateway')
@@ -31,10 +30,19 @@ class PerimeterViewTests(TestCase):
         request.session = {}
         response = gateway(request)
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], self.url)
         usage = AccessTokenUse.objects.get()
         self.assertEqual(usage.user_email, payload['email'])
         self.assertEqual(usage.user_name, payload['name'])
         self.assertEqual(usage.token, token)
+
+        # Check the next url is decoded and used properly
+        url = self.url + "?next=%2Fadmin%2F%3Fimportant%3Dparam"
+        request = self.factory.post(url, payload)
+        request.session = {}
+        response = gateway(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], "/admin/?important=param")
 
     def test_resolve_return_url(self):
         default_url = reverse('perimeter:gateway')

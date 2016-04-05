@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Perimeter app views
+import urllib
+
 from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -17,8 +19,14 @@ def resolve_return_url(return_url):
     know exists - perimeter:gateway
 
     """
+    path = None
+    if return_url:
+        return_url = urllib.unquote(return_url)
+        # Path with a query string will not resolve, so we strip it for the check.
+        path = return_url.split("?")[0]
+
     try:
-        url = resolve(return_url)
+        resolve(path)
         return return_url
     except Resolver404:
         return reverse('perimeter:gateway')

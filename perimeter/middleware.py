@@ -3,6 +3,8 @@
 Middleware component of Perimeter app - checks all incoming requests for a
 valid token. See Perimeter docs for more details.
 """
+import urllib
+
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed, PermissionDenied
 from django.core.urlresolvers import reverse
@@ -68,7 +70,7 @@ class PerimeterAccessMiddleware(object):
             return None
 
         # redirect to the gateway for validation,
+        qstring = urllib.urlencode({'next': request.get_full_path()})
         return HttpResponseRedirect(
-            reverse('perimeter:gateway') +
-            '?next=%s' % request.path
+            reverse('perimeter:gateway') + '?' + qstring
         )

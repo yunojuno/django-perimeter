@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 # urls for perimeter app.
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns(
-    'perimeter.views',
-    url(r'^gateway/', 'gateway', name='gateway'),
-)
+from perimeter import views
+
+urlpatterns = [
+    url(
+        r'^gateway/',
+        views.gateway,
+        name='gateway'
+    ),
+]

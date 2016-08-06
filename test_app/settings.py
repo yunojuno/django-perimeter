@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Test app settings."""
-from os import environ, path
+from os import path
 
 # set the django DEBUG option
 DEBUG = True
 
-PERIMETER_ENABLED=True
+PERIMETER_ENABLED = True
 
 ROOT_URLCONF = 'test_app.urls'
 
@@ -69,3 +69,15 @@ LOGGING = {
         },
     }
 }
+
+PROJECT_DIR = path.abspath(path.join(path.dirname(__file__)))
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            path.join(PROJECT_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+    }
+]

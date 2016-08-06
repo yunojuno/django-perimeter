@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # perimeter tests
-import datetime
 from urlparse import urlparse
 
 from django.contrib.auth.models import User, AnonymousUser
-from django.core.exceptions import MiddlewareNotUsed
 from django.core.urlresolvers import reverse, resolve
 from django.test import TestCase, RequestFactory, override_settings
 

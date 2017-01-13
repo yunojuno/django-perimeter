@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """Test app settings."""
+from distutils.version import StrictVersion
 from os import path
+
+import django
+
+DJANGO_VERSION = StrictVersion(django.get_version())
 
 # set the django DEBUG option
 DEBUG = True
@@ -34,8 +39,7 @@ INSTALLED_APPS = (
     'test_app',
 )
 
-# none required, but need to explicitly state this for Django 1.7
-MIDDLEWARE_CLASSES = [
+ACTUAL_MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -43,6 +47,11 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'perimeter.middleware.PerimeterAccessMiddleware',
 ]
+
+if DJANGO_VERSION < StrictVersion('1.10.0'):
+    MIDDLEWARE_CLASSES = ACTUAL_MIDDLEWARE_CLASSES
+else:
+    MIDDLEWARE = ACTUAL_MIDDLEWARE_CLASSES
 
 SECRET_KEY = "something really, really hard to guess goes here."
 

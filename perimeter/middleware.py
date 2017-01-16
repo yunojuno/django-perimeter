@@ -5,12 +5,16 @@ valid token. See Perimeter docs for more details.
 """
 import urllib
 
-from django.conf import settings
-from django.core.exceptions import MiddlewareNotUsed, PermissionDenied
+from django.core.exceptions import MiddlewareNotUsed
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    # Fallback for Django < 1.10
+    MiddlewareMixin = object
 
-from perimeter.models import AccessToken, EmptyToken
+from perimeter.models import AccessToken
 from perimeter.settings import (
     PERIMETER_SESSION_KEY,
     PERIMETER_ENABLED,
@@ -44,14 +48,14 @@ def set_request_token(request, token_value):
     request.session[PERIMETER_SESSION_KEY] = token_value
 
 
-class PerimeterAccessMiddleware(object):
+class PerimeterAccessMiddleware(MiddlewareMixin):
     """
     Middleware used to detect whether user can access site or not.
 
     This middleware will be disabled if the PERIMETER_ENABLED setting does not
     exist in django settings, or is False.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
         Disable middleware if PERIMETER_ENABLED setting not True.
 
@@ -60,6 +64,7 @@ class PerimeterAccessMiddleware(object):
         """
         if PERIMETER_ENABLED is False:
             raise MiddlewareNotUsed()
+        super(PerimeterAccessMiddleware, self).__init__(*args, **kwargs)
 
     def process_request(self, request):
         """Check user session for token."""

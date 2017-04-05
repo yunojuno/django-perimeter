@@ -1,25 +1,26 @@
-import os
-from setuptools import setup
+from os import path, pardir, chdir
+from setuptools import setup, find_packages
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+README = open(path.join(path.dirname(__file__), 'README.rst')).read()
+# requirements.txt must be included in MANIFEST.in and include_package_data must be True
+# in order for this to work; ensures that tox can use the setup to enforce requirements
+REQUIREMENTS = '\n'.join(open(path.join(path.dirname(__file__), 'requirements.txt')).readlines())
 
 # allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+chdir(path.normpath(path.join(path.abspath(__file__), pardir)))
 
 setup(
     name='django-perimeter',
     version='0.8',
-    packages=['perimeter', 'perimeter.tests', 'perimeter.management.commands'],
+    packages=find_packages(),
     include_package_data=True,
     license='BSD License',
     description='Site-wide perimeter access control for Django projects.',
     long_description=README,
     url='https://github.com/yunojuno/django-perimeter',
-    author='Hugo Rodger-Brown',
-    author_email='hugo@yunojuno.com',
-    install_requires=[
-        'Django>=1.8',
-    ],
+    author='YunoJuno',
+    author_email='code@yunojuno.com',
+    install_requires=REQUIREMENTS,
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

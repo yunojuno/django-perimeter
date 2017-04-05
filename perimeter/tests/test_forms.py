@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-# perimeter form tests
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory
 from django.utils.timezone import now
 
-from perimeter.forms import GatewayForm
-from perimeter.models import AccessToken, AccessTokenUse
+from ..forms import GatewayForm
+from ..models import AccessToken, AccessTokenUse
 
 YESTERDAY = now().date() - datetime.timedelta(days=1)
+
 
 class GatewayFormTests(TestCase):
 
@@ -20,7 +20,8 @@ class GatewayFormTests(TestCase):
             'email': "hugo@yunojuno.com",
             'name': "Hugo Rodger-Brown"
         }
-        self.request = self.factory.post('/',
+        self.request = self.factory.post(
+            '/',
             data=self.payload,
             REMOTE_ADDR='127.0.0.1',
             HTTP_USER_AGENT='test_agent'

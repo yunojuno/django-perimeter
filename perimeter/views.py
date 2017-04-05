@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# Perimeter app views
-import urllib
+from urllib.parse import unquote
 
 from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.http import HttpResponseRedirect
@@ -21,7 +20,7 @@ def resolve_return_url(return_url):
     """
     path = None
     if return_url:
-        return_url = urllib.unquote(return_url)
+        return_url = unquote(return_url)
         # Path with a query string will not resolve, so we strip it for the check.
         path = return_url.split("?")[0]
 

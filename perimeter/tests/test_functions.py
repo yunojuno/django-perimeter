@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-# perimeter function tests
 from os import environ
 
-from django.conf import settings
+from django.test import TestCase
 
-from django.test import TestCase, RequestFactory, override_settings
-
-from perimeter.settings import get_setting, CAST_AS_INT, CAST_AS_BOOL
+from ..settings import (
+    get_setting,
+    CAST_AS_INT,
+    CAST_AS_BOOL
+)
 
 
 class SettingsTests(TestCase):

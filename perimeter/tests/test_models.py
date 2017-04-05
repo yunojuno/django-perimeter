@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-# perimeter tests
 from datetime import datetime, date, time, timedelta
 
-# from django.contrib.auth.models import User, AnonymousUser
 from django.core.cache import cache
-# from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
-# from django.core.urlresolvers import reverse
-from django.test import TestCase  # , RequestFactory, override_settings
+from django.test import TestCase
 from django.utils.timezone import (
     now,
     is_aware,
@@ -15,13 +11,13 @@ from django.utils.timezone import (
     get_current_timezone
 )
 
-from perimeter.models import (
+from ..models import (
     AccessToken,
     AccessTokenUse,
     default_expiry,
     EmptyToken
 )
-from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
+from ..settings import PERIMETER_DEFAULT_EXPIRY
 
 TODAY = now().date()
 YESTERDAY = TODAY - timedelta(days=1)
@@ -107,19 +103,19 @@ class AccessTokenTests(TestCase):
         yesterday = today - timedelta(days=1)
         at = AccessToken(token="foobar", expires_on=today, is_active=True)
         self.assertEqual(
-            unicode(at),
-            u"foobar - valid until %s" % today
+            str(at),
+            "foobar - valid until %s" % today
         )
         at.is_active = False
         self.assertEqual(
-            unicode(at),
-            u"foobar - inactive"
+            str(at),
+            "foobar - inactive"
         )
         at.is_active = True
         at.expires_on = yesterday
         self.assertEqual(
-            unicode(at),
-            u"foobar - expired on %s" % yesterday
+            str(at),
+            "foobar - expired on %s" % yesterday
         )
 
     def test_cache_key(self):

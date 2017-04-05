@@ -75,7 +75,7 @@ class PerimeterAccessMiddleware(MiddlewareMixin):
             return None
 
         # redirect to the gateway for validation,
-        qstring = urllib.urlencode({'next': request.get_full_path()})
+        qstring = urllib.parse.urlencode({'next': request.get_full_path()})
         return HttpResponseRedirect(
             reverse('perimeter:gateway') + '?' + qstring
         )

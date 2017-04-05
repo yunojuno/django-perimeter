@@ -10,7 +10,14 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils.timezone import now, make_aware, is_naive, is_aware, get_current_timezone
+from django.utils.timezone import (
+    now,
+    make_aware,
+    make_naive,
+    is_naive,
+    is_aware,
+    get_current_timezone
+)
 
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
@@ -83,30 +90,27 @@ class AccessToken(models.Model):
 
     objects = AccessTokenManager()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.is_valid:
             return (
-                u"%s - valid until %s" % (
+                "%s - valid until %s" % (
                     self.token,
                     self.expires_on
                 )
             )
         elif self.is_active is False:
             return (
-                u"%s - inactive" % self.token
+                "%s - inactive" % self.token
             )
         elif self.has_expired:
             return (
-                u"%s - expired on %s" % (
+                "%s - expired on %s" % (
                     self.token,
                     self.expires_on
                 )
             )
         else:
             return (u"%s - invalid" % self.token)
-
-    def __str__(self):
-        return self.__unicode__().encode('UTF-8')
 
     @classmethod
     def random_token_value(cls):
@@ -199,9 +203,12 @@ class AccessTokenUse(models.Model):
     """Audit record used to log whenever an access token is used."""
     token = models.ForeignKey(AccessToken)
     user_email = models.EmailField(
-        verbose_name="Token used by (email)")
-    user_name = models.CharField(max_length=100,
-        verbose_name="Token used by (name)")
+        verbose_name="Token used by (email)"
+    )
+    user_name = models.CharField(
+        max_length=100,
+        verbose_name="Token used by (name)"
+    )
     client_ip = models.CharField(
         max_length=15,
         verbose_name='IP address',

@@ -11,10 +11,10 @@ chdir(path.normpath(path.join(path.abspath(__file__), pardir)))
 
 setup(
     name='django-perimeter',
-    version='0.8',
+    version='0.8.1',
     packages=find_packages(),
     include_package_data=True,
-    license='BSD License',
+    license='MIT',
     description='Site-wide perimeter access control for Django projects.',
     long_description=README,
     url='https://github.com/yunojuno/django-perimeter',

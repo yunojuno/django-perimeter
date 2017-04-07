@@ -22,8 +22,6 @@ class PerimeterViewTests(TestCase):
         token = AccessToken.objects.create_access_token()
         payload = {
             'token': token.token,
-            'email': 'hugo@example.com',
-            'name': 'Hugo Rodger-Brown',
         }
         request = self.factory.post(self.url, payload)
         request.session = {}
@@ -31,8 +29,8 @@ class PerimeterViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], self.url)
         usage = AccessTokenUse.objects.get()
-        self.assertEqual(usage.user_email, payload['email'])
-        self.assertEqual(usage.user_name, payload['name'])
+        self.assertIsNone(usage.user_email)
+        self.assertIsNone(usage.user_name)
         self.assertEqual(usage.token, token)
 
         # Check the next url is decoded and used properly

@@ -190,5 +190,5 @@ class AccesTokenUseTests(TestCase):
     def test_save(self):
         atu = AccessTokenUse(token=self.token)
         atu.save()
-        self.assertEqual(atu.user_email, '')
-        self.assertEqual(atu.user_name, '')
+        self.assertIsNone(atu.user_email, None)
+        self.assertIsNone(atu.user_name, None)

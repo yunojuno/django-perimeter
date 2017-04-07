@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Django models for the Perimeter app.
-"""
-from datetime import date, time, timedelta, datetime
+import datetime
 import random
 
 from django.conf import settings
@@ -10,21 +7,17 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils.timezone import (
-    now,
-    make_aware,
-    make_naive,
-    is_naive,
-    is_aware,
-    get_current_timezone
-)
+from django.utils import timezone
 
-from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
+from .settings import PERIMETER_DEFAULT_EXPIRY
 
 
 def default_expiry():
     """Return the default expiry date."""
-    return (now() + timedelta(days=PERIMETER_DEFAULT_EXPIRY)).date()
+    return (
+        timezone.now() +
+        datetime.timedelta(days=PERIMETER_DEFAULT_EXPIRY)
+    ).date()
 
 
 class EmptyToken(object):
@@ -91,26 +84,7 @@ class AccessToken(models.Model):
     objects = AccessTokenManager()
 
     def __str__(self):
-        if self.is_valid:
-            return (
-                "%s - valid until %s" % (
-                    self.token,
-                    self.expires_on
-                )
-            )
-        elif self.is_active is False:
-            return (
-                "%s - inactive" % self.token
-            )
-        elif self.has_expired:
-            return (
-                "%s - expired on %s" % (
-                    self.token,
-                    self.expires_on
-                )
-            )
-        else:
-            return (u"%s - invalid" % self.token)
+        return self.token
 
     @classmethod
     def random_token_value(cls):
@@ -138,7 +112,7 @@ class AccessToken(models.Model):
 
     def save(self, *args, **kwargs):
         "Sets the created_at timestamp."
-        self.updated_at = now()
+        self.updated_at = timezone.now()
         self.created_at = self.created_at or self.updated_at
         super(AccessToken, self).save(*args, **kwargs)
         return self
@@ -151,17 +125,17 @@ class AccessToken(models.Model):
     @property
     def seconds_to_expiry(self):
         """Return the number of seconds till expiry (used for caching)."""
-        expires_at = datetime.combine(self.expires_on, time.min)
-        if settings.USE_TZ and is_naive(expires_at):
-            expires_at = make_aware(expires_at, get_current_timezone())
-        elif not settings.USE_TZ and is_aware(expires_at):
-            expires_at = make_naive(expires_at)
-        return int((expires_at - now()).total_seconds())
+        expires_at = datetime.datetime.combine(self.expires_on, datetime.time.min)
+        if settings.USE_TZ and timezone.is_naive(expires_at):
+            expires_at = timezone.make_aware(expires_at, timezone.get_current_timezone())
+        elif not settings.USE_TZ and timezone.is_aware(expires_at):
+            expires_at = timezone.make_naive(expires_at)
+        return int((expires_at - timezone.now()).total_seconds())
 
     @property
     def has_expired(self):
         """Return True if the token has passed expiry date."""
-        return self.expires_on < date.today()
+        return self.expires_on < datetime.date.today()
 
     @property
     def is_valid(self):
@@ -203,11 +177,13 @@ class AccessTokenUse(models.Model):
     """Audit record used to log whenever an access token is used."""
     token = models.ForeignKey(AccessToken)
     user_email = models.EmailField(
-        verbose_name="Token used by (email)"
+        verbose_name="Token used by (email)",
+        blank=True, null=True
     )
     user_name = models.CharField(
         max_length=100,
-        verbose_name="Token used by (name)"
+        verbose_name="Token used by (name)",
+        blank=True, null=True
     )
     client_ip = models.CharField(
         max_length=15,
@@ -221,14 +197,12 @@ class AccessTokenUse(models.Model):
     )
     timestamp = models.DateTimeField()
 
-    def __unicode__(self):
-        return u"'%s' used by '%s'" % (self.token.token, self.user_email)
-
     def __str__(self):
-        return self.__unicode__().encode('UTF-8')
+        return "'%s' used %s" % (self.token.token, self.timestamp)
 
     def save(self, *args, **kwargs):
         "Set the timestamp and save the object."
-        self.timestamp = self.timestamp or now()
+        if 'update_fields' not in kwargs:
+            self.timestamp = self.timestamp or timezone.now()
         super(AccessTokenUse, self).save(*args, **kwargs)
         return self

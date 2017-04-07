@@ -37,8 +37,8 @@ class PerimeterViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], self.url)
         usage = AccessTokenUse.objects.get()
-        self.assertEqual(usage.user_email, payload['email'])
-        self.assertEqual(usage.user_name, payload['name'])
+        self.assertEqual(usage.user_email, None)
+        self.assertEqual(usage.user_name, None)
         self.assertEqual(usage.token, token)
 
         # Check the next url is decoded and used properly

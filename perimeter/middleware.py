@@ -14,8 +14,8 @@ except ImportError:
     # Fallback for Django < 1.10
     MiddlewareMixin = object
 
-from perimeter.models import AccessToken
-from perimeter.settings import (
+from .models import AccessToken
+from .settings import (
     PERIMETER_SESSION_KEY,
     PERIMETER_ENABLED,
     PERIMETER_BYPASS_FUNCTION as bypass_perimeter

@@ -14,7 +14,7 @@ setup(
     version='0.9',
     packages=find_packages(),
     include_package_data=True,
-    license='BSD License',
+    license='MIT',
     description='Site-wide perimeter access control for Django projects.',
     long_description=README,
     url='https://github.com/yunojuno/django-perimeter',

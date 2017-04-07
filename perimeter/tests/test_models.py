@@ -98,25 +98,9 @@ class AccessTokenTests(TestCase):
         self.assertFalse(at.has_expired)
 
     def test_str(self):
-        # test unicode, str
         today = date.today()
-        yesterday = today - timedelta(days=1)
-        at = AccessToken(token="foobar", expires_on=today, is_active=True)
-        self.assertEqual(
-            str(at),
-            "foobar - valid until %s" % today
-        )
-        at.is_active = False
-        self.assertEqual(
-            str(at),
-            "foobar - inactive"
-        )
-        at.is_active = True
-        at.expires_on = yesterday
-        self.assertEqual(
-            str(at),
-            "foobar - expired on %s" % yesterday
-        )
+        at = AccessToken(token="¡€#¢∞§¶•ªº", expires_on=today, is_active=True)
+        self.assertEqual(str(at), '¡€#¢∞§¶•ªº')
 
     def test_cache_key(self):
         token = AccessToken(token="test")
@@ -196,4 +180,12 @@ class AccessTokenTests(TestCase):
 
 
 class AccesTokenUseTests(TestCase):
-    pass
+
+    def setUp(self):
+        self.token = AccessToken(token='foo').save()
+
+    def test_save(self):
+        atu = AccessTokenUse(token=self.token)
+        atu.save()
+        self.assertEqual(atu.user_email, None)
+        self.assertEqual(atu.user_name, None)

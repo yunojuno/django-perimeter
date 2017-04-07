@@ -5,7 +5,8 @@ from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from perimeter.forms import GatewayForm
+from .forms import UserGatewayForm, TokenGatewayForm
+from .settings import PERIMETER_REQUIRE_USER_DETAILS
 
 
 def resolve_return_url(return_url):
@@ -38,11 +39,14 @@ def gateway(request, template_name='perimeter/gateway.html'):
     user request they will redirect to this page.
 
     """
+    # the form to use is based on whether we want user details or not.
+    klass = UserGatewayForm if PERIMETER_REQUIRE_USER_DETAILS else TokenGatewayForm
+
     if request.method == 'GET':
-        form = GatewayForm()
+        form = klass()
 
     elif request.method == 'POST':
-        form = GatewayForm(request.POST)
+        form = klass(request.POST)
         if form.is_valid():
             form.save(request)
             return HttpResponseRedirect(

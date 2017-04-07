@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# perimeter view tests
 from django.core.urlresolvers import reverse
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory
 
 from perimeter.models import AccessToken, AccessTokenUse
 from perimeter.views import resolve_return_url, gateway

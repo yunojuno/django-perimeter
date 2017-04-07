@@ -43,3 +43,7 @@ PERIMETER_BYPASS_FUNCTION = getattr(
     # default function is to restrict everything except the gateway page itself
     lambda r: r.path == reverse('perimeter:gateway')
 )
+# If True, then ask for user details on the gateway form
+PERIMETER_REQUIRE_USER_DETAILS = get_setting(
+    'PERIMETER_REQUIRE_USER_DETAILS', False, cast_func=CAST_AS_BOOL
+)

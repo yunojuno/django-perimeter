@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-# perimeter tests
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from datetime import datetime, date, time, timedelta
 
-# from django.contrib.auth.models import User, AnonymousUser
 from django.core.cache import cache
-# from django.core.exceptions import ValidationError, MiddlewareNotUsed, PermissionDenied
-# from django.core.urlresolvers import reverse
-from django.test import TestCase  # , RequestFactory, override_settings
+from django.test import TestCase
 from django.utils.timezone import (
     now,
     is_aware,
@@ -102,25 +101,9 @@ class AccessTokenTests(TestCase):
         self.assertFalse(at.has_expired)
 
     def test_str(self):
-        # test unicode, str
         today = date.today()
-        yesterday = today - timedelta(days=1)
-        at = AccessToken(token="foobar", expires_on=today, is_active=True)
-        self.assertEqual(
-            unicode(at),
-            u"foobar - valid until %s" % today
-        )
-        at.is_active = False
-        self.assertEqual(
-            unicode(at),
-            u"foobar - inactive"
-        )
-        at.is_active = True
-        at.expires_on = yesterday
-        self.assertEqual(
-            unicode(at),
-            u"foobar - expired on %s" % yesterday
-        )
+        at = AccessToken(token="¡€#¢∞§¶•ªº", expires_on=today, is_active=True)
+        self.assertEqual(str(at), '¡€#¢∞§¶•ªº'.encode('utf-8'))
 
     def test_cache_key(self):
         token = AccessToken(token="test")
@@ -200,4 +183,12 @@ class AccessTokenTests(TestCase):
 
 
 class AccesTokenUseTests(TestCase):
-    pass
+
+    def setUp(self):
+        self.token = AccessToken(token='foo').save()
+
+    def test_save(self):
+        atu = AccessTokenUse(token=self.token)
+        atu.save()
+        self.assertEqual(atu.user_email, '')
+        self.assertEqual(atu.user_name, '')

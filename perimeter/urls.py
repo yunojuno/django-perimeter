@@ -2,7 +2,7 @@
 # urls for perimeter app.
 from django.conf.urls import url
 
-from perimeter import views
+from . import views
 
 urlpatterns = [
     url(

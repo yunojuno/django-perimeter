@@ -3,7 +3,7 @@
 Middleware component of Perimeter app - checks all incoming requests for a
 valid token. See Perimeter docs for more details.
 """
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from django.core.exceptions import MiddlewareNotUsed
 from django.core.urlresolvers import reverse

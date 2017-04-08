@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse
 from django.test import TestCase, RequestFactory
 
-from perimeter.models import AccessToken, AccessTokenUse
-from perimeter.views import resolve_return_url, gateway
+from ..compat import reverse
+from ..models import (
+    AccessToken,
+    AccessTokenUse
+)
+from ..views import (
+    resolve_return_url,
+    gateway
+)
 
 
 class PerimeterViewTests(TestCase):

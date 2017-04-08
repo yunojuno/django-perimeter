@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from datetime import datetime, date, time, timedelta
 
 from django.core.cache import cache
@@ -14,13 +11,13 @@ from django.utils.timezone import (
     get_current_timezone
 )
 
-from perimeter.models import (
+from ..models import (
     AccessToken,
     AccessTokenUse,
     default_expiry,
     EmptyToken
 )
-from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
+from ..settings import PERIMETER_DEFAULT_EXPIRY
 
 TODAY = now().date()
 YESTERDAY = TODAY - timedelta(days=1)
@@ -103,7 +100,7 @@ class AccessTokenTests(TestCase):
     def test_str(self):
         today = date.today()
         at = AccessToken(token="¡€#¢∞§¶•ªº", expires_on=today, is_active=True)
-        self.assertEqual(str(at), '¡€#¢∞§¶•ªº'.encode('utf-8'))
+        self.assertEqual(str(at), '¡€#¢∞§¶•ªº')
 
     def test_cache_key(self):
         token = AccessToken(token="test")
@@ -190,5 +187,5 @@ class AccesTokenUseTests(TestCase):
     def test_save(self):
         atu = AccessTokenUse(token=self.token)
         atu.save()
-        self.assertIsNone(atu.user_email, None)
-        self.assertIsNone(atu.user_name, None)
+        self.assertIsNone(atu.user_email)
+        self.assertIsNone(atu.user_name)

@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
-# perimeter tests
-from urlparse import urlparse
-
 from django.contrib.auth.models import User, AnonymousUser
-from django.core.urlresolvers import reverse, resolve
 from django.test import TestCase, RequestFactory, override_settings
 
-from perimeter.middleware import (
+from six.moves.urllib.parse import urlparse
+
+from ..compat import (
+    reverse,
+    resolve,
+)
+from ..middleware import (
     PerimeterAccessMiddleware,
     bypass_perimeter,
     get_request_token,
     PERIMETER_SESSION_KEY
 )
-from perimeter.models import AccessToken, EmptyToken
+from ..models import (
+    AccessToken,
+    EmptyToken
+)
 
 
 @override_settings(PERIMETER_ENABLED=True)

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import datetime
 import random
 
@@ -87,7 +84,7 @@ class AccessToken(models.Model):
     objects = AccessTokenManager()
 
     def __str__(self):
-        return self.token.encode('utf-8')
+        return self.token
 
     @classmethod
     def random_token_value(cls):
@@ -201,8 +198,7 @@ class AccessTokenUse(models.Model):
     timestamp = models.DateTimeField()
 
     def __str__(self):
-        string = "'%s' used %s" % (self.token.token, self.timestamp)
-        return string.encode('utf-8')
+        return "'%s' used %s" % (self.token.token, self.timestamp)
 
     def save(self, *args, **kwargs):
         "Set the timestamp and save the object."

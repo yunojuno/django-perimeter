@@ -11,6 +11,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        self.stdout.write(u"Listing all tokens:")
+        self.stdout.write("Listing all tokens:")
         for token in AccessToken.objects.all():
             self.stdout.write(str(token))

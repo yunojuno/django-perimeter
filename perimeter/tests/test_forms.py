@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import datetime
 
 from django.core.exceptions import ValidationError
@@ -31,11 +29,11 @@ class BaseGatewayFormTests(TestCase):
         return form
 
     def setUp(self):
-        self.token = AccessToken(token="tes†").save()
         self.factory = RequestFactory()
         self.payload = {
-            'token': self.token.token,
+            'token': "test",
         }
+        self.token = AccessToken(token="test").save()
 
 
 class TokenGatewayFormTests(BaseGatewayFormTests):

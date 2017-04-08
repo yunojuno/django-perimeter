@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from urllib.parse import unquote
-
 from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+
+from six.moves.urllib.parse import unquote
 
 from .forms import UserGatewayForm, TokenGatewayForm
 from .settings import PERIMETER_REQUIRE_USER_DETAILS

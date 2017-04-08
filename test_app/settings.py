@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Test app settings."""
 from distutils.version import StrictVersion
 from os import path
 
@@ -74,7 +73,7 @@ LOGGING = {
         '': {
             'handlers': ['console'],
             'propagate': True,
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
     }
 }

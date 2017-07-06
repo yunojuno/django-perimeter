@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='accesstokenuse',
             name='user_email',
-            field=models.EmailField(max_length=75, verbose_name=b'Token used by (email)'),
+            field=models.EmailField(max_length=75, verbose_name='Token used by (email)'),
             preserve_default=True,
         ),
     ]

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import datetime
 import random
 
@@ -79,7 +76,7 @@ class AccessToken(models.Model):
     # NB pass in a callable, not the result of the callable, see:
     # http://stackoverflow.com/a/29549675/45698
     expires_on = models.DateField(default=default_expiry)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -177,7 +174,7 @@ def on_delete_access_token(sender, instance, **kwargs):
 
 class AccessTokenUse(models.Model):
     """Audit record used to log whenever an access token is used."""
-    token = models.ForeignKey(AccessToken)
+    token = models.ForeignKey(AccessToken, on_delete=models.CASCADE)
     user_email = models.EmailField(
         verbose_name="Token used by (email)",
         blank=True, null=True

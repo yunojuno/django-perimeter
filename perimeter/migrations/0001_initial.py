@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('expires_on', models.DateField(default=perimeter.models.default_expiry)),
                 ('created_at', models.DateTimeField()),
                 ('updated_at', models.DateTimeField()),
-                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('client_ip', models.CharField(max_length=15, verbose_name='IP address', blank=True)),
                 ('client_user_agent', models.CharField(max_length=150, verbose_name='User Agent', blank=True)),
                 ('timestamp', models.DateTimeField()),
-                ('token', models.ForeignKey(to='perimeter.AccessToken')),
+                ('token', models.ForeignKey(to='perimeter.AccessToken', on_delete=models.CASCADE)),
             ],
         ),
     ]

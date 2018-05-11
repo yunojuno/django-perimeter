@@ -1,2 +1,1 @@
-# -*- coding: utf-8 -*-
-# perimeter root package declaration
+default_app_config = 'perimeter.apps.PerimeterAppConfig'

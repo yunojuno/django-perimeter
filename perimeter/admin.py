@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-"""Django models for the Perimeter app."""
 from django.contrib.admin import site, ModelAdmin
 
 from .models import AccessToken, AccessTokenUse

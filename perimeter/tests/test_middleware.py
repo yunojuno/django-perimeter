@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
+from urllib.parse import urlparse
+
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import TestCase, RequestFactory, override_settings
+from django.urls import reverse, resolve
 
-from six.moves.urllib.parse import urlparse
-
-from ..compat import (
-    reverse,
-    resolve,
-)
 from ..middleware import (
     PerimeterAccessMiddleware,
     bypass_perimeter,

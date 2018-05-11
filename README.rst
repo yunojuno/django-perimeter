@@ -4,12 +4,7 @@
 .. image:: https://travis-ci.org/yunojuno/django-perimeter.svg?branch=master
     :target: https://travis-ci.org/yunojuno/django-perimeter
 
-**Python3 and Django 2.0**
-
-The latest version of Django, 1.11 is the last to support Python 2, and so
-in advance of the migration to Django 2.0 this package will also now only
-support Python 3 officially. If you need to support earlier Django versions
-please use the ``python27`` branch.
+**This package now requires Python3 and Django 1.11 or above. For previous versions please refer to the Python2 branch.**
 
 Django Perimeter
 ================

@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-# perimeter settings file
 from os import environ
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 CAST_AS_BOOL = lambda x: x in (True, 'true', 'True')
 CAST_AS_INT = lambda x: int(x)

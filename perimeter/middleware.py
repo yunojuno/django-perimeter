@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
 """
 Middleware component of Perimeter app - checks all incoming requests for a
 valid token. See Perimeter docs for more details.
 """
+from urllib.parse import urlencode
+
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.deprecation import MiddlewareMixin
 
-from six.moves.urllib.parse import urlparse, urlencode
-
-from .compat import reverse, MiddlewareMixin
 from .models import AccessToken
 from .settings import (
     PERIMETER_SESSION_KEY,

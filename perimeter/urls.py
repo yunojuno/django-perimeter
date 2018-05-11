@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-# urls for perimeter app.
-from django.conf.urls import url
+try:
+    from django.urls import re_path
+except ImportError:
+    from django.conf.urls import url as re_path
 
 from . import views
 
+app_name = 'perimeter'
+
 urlpatterns = [
-    url(
-        r'^gateway/',
-        views.gateway,
-        name='gateway'
-    ),
+    re_path(r'^gateway/', views.gateway, name='gateway'),
 ]

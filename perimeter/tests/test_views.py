@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 from django.test import TestCase, RequestFactory
+from django.urls import reverse
 
-from ..compat import reverse
 from ..models import (
     AccessToken,
     AccessTokenUse

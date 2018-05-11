@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime, date, time, timedelta
 
 from django.core.cache import cache

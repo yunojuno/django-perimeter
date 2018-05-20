@@ -189,9 +189,8 @@ class AccessTokenUse(models.Model):
         verbose_name='IP address',
         blank=True
     )
-    client_user_agent = models.CharField(
-        max_length=150,
-        verbose_name="User Agent",
+    client_user_agent = models.TextField(
+        verbose_name="Client User Agent",
         blank=True
     )
     timestamp = models.DateTimeField()

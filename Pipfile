@@ -6,10 +6,11 @@ verify_ssl = true
 [dev-packages]
 coverage = "*"
 black = "*"
+pylint = "*"
 
 [packages]
 # django-perimeter = {editable = true,path = "."}
-# django = "*"
+django = "*"
 
 [requires]
 python_version = "3"

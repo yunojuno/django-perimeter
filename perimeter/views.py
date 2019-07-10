@@ -28,10 +28,10 @@ def resolve_return_url(return_url):
         resolve(path)
         return return_url
     except Resolver404:
-        return reverse('perimeter:gateway')
+        return reverse("perimeter:gateway")
 
 
-def gateway(request, template_name='perimeter/gateway.html'):
+def gateway(request, template_name="perimeter/gateway.html"):
     """Display gateway form and process access requests.
 
     When the PerimeterAccessMiddleware catches an unvalidated
@@ -41,16 +41,13 @@ def gateway(request, template_name='perimeter/gateway.html'):
     # the form to use is based on whether we want user details or not.
     klass = UserGatewayForm if PERIMETER_REQUIRE_USER_DETAILS else TokenGatewayForm
 
-    if request.method == 'GET':
+    if request.method == "GET":
         form = klass()
 
-    elif request.method == 'POST':
+    elif request.method == "POST":
         form = klass(request.POST)
         if form.is_valid():
             form.save(request)
-            return HttpResponseRedirect(
-                resolve_return_url(
-                    request.GET.get('next'))
-            )
+            return HttpResponseRedirect(resolve_return_url(request.GET.get("next")))
 
-    return render(request, template_name, {'form': form})
+    return render(request, template_name, {"form": form})

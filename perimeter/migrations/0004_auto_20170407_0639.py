@@ -7,19 +7,27 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('perimeter', '0003_auto_20150612_0151'),
-    ]
+    dependencies = [("perimeter", "0003_auto_20150612_0151")]
 
     operations = [
         migrations.AlterField(
-            model_name='accesstokenuse',
-            name='user_email',
-            field=models.EmailField(blank=True, max_length=254, null=True, verbose_name='Token used by (email)'),
+            model_name="accesstokenuse",
+            name="user_email",
+            field=models.EmailField(
+                blank=True,
+                max_length=254,
+                null=True,
+                verbose_name="Token used by (email)",
+            ),
         ),
         migrations.AlterField(
-            model_name='accesstokenuse',
-            name='user_name',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Token used by (name)'),
+            model_name="accesstokenuse",
+            name="user_name",
+            field=models.CharField(
+                blank=True,
+                max_length=100,
+                null=True,
+                verbose_name="Token used by (name)",
+            ),
         ),
     ]

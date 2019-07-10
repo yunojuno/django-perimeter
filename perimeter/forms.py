@@ -14,7 +14,7 @@ class TokenGatewayForm(forms.Form):
     def clean_token(self):
         """Validate the token against existing tokens."""
         try:
-            _token = self.cleaned_data.get('token')
+            _token = self.cleaned_data.get("token")
             self.token = AccessToken.objects.get(token=_token)
             if self.token.is_valid:
                 return _token
@@ -27,14 +27,14 @@ class TokenGatewayForm(forms.Form):
 
     def save(self, request):
         """Create a new AccessTokenUse object from the form."""
-        if getattr(self, 'token', None) is None:
+        if getattr(self, "token", None) is None:
             raise ValueError("Form token attr is not set")
         request.session[PERIMETER_SESSION_KEY] = self.token.token
         return self.token.record(
-            user_email=self.cleaned_data.get('email'),
-            user_name=self.cleaned_data.get('name'),
-            client_ip=request.META.get('REMOTE_ADDR', 'unknown'),
-            client_user_agent=request.META.get('HTTP_USER_AGENT', 'unknown'),
+            user_email=self.cleaned_data.get("email"),
+            user_name=self.cleaned_data.get("name"),
+            client_ip=request.META.get("REMOTE_ADDR", "unknown"),
+            client_user_agent=request.META.get("HTTP_USER_AGENT", "unknown"),
         )
 
 

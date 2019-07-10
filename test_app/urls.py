@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 try:
     from django.urls import re_path, include
 except ImportError:
@@ -10,7 +11,7 @@ import perimeter.urls
 admin.autodiscover()
 
 urlpatterns = [
-    re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='homepage'),
-    re_path(r'^admin/', admin.site.urls),
-    re_path(r'^perimeter/', include(perimeter.urls)),
+    re_path(r"^$", TemplateView.as_view(template_name="index.html"), name="homepage"),
+    re_path(r"^admin/", admin.site.urls),
+    re_path(r"^perimeter/", include(perimeter.urls)),
 ]

@@ -14,14 +14,14 @@ from .settings import (
     HTTP_X_PERIMETER_TOKEN,
     PERIMETER_SESSION_KEY,
     PERIMETER_ENABLED,
-    PERIMETER_BYPASS_FUNCTION as bypass_perimeter
+    PERIMETER_BYPASS_FUNCTION as bypass_perimeter,
 )
 
 
 def check_middleware(request):
     """Check that Session middleware is installed."""
-    if not hasattr(request, 'session'):
-        raise ImproperlyConfigured (
+    if not hasattr(request, "session"):
+        raise ImproperlyConfigured(
             "Missing session attribute - please check MIDDLEWARE_CLASSES for "
             "'django.contrib.sessions.middleware.SessionMiddleware'."
         )
@@ -30,9 +30,8 @@ def check_middleware(request):
 def get_request_token(request):
     """Extract token string from HTTP header or querystring."""
     check_middleware(request)
-    return (
-        request.META.get(HTTP_X_PERIMETER_TOKEN, None) or
-        request.session.get(PERIMETER_SESSION_KEY, None)
+    return request.META.get(HTTP_X_PERIMETER_TOKEN, None) or request.session.get(
+        PERIMETER_SESSION_KEY, None
     )
 
 
@@ -51,6 +50,7 @@ class PerimeterAccessMiddleware(MiddlewareMixin):
     This middleware will be disabled if the PERIMETER_ENABLED setting does not
     exist in django settings, or is False.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Disable middleware if PERIMETER_ENABLED setting not True.
@@ -71,7 +71,5 @@ class PerimeterAccessMiddleware(MiddlewareMixin):
             return None
 
         # redirect to the gateway for validation,
-        qstring = urlencode({'next': request.get_full_path()})
-        return HttpResponseRedirect(
-            reverse('perimeter:gateway') + '?' + qstring
-        )
+        qstring = urlencode({"next": request.get_full_path()})
+        return HttpResponseRedirect(reverse("perimeter:gateway") + "?" + qstring)

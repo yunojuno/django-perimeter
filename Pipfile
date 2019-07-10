@@ -5,12 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 coverage = "*"
-tox = "*"
-tox-pipenv = "*"
+black = "*"
 
 [packages]
-django-perimeter = {editable = true,path = "."}
-django = "*"
+# django-perimeter = {editable = true,path = "."}
+# django = "*"
 
 [requires]
 python_version = "3"
+
+[pipenv]
+allow_prereleases = true

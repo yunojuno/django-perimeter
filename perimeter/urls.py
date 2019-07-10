@@ -5,8 +5,6 @@ except ImportError:
 
 from . import views
 
-app_name = 'perimeter'
+app_name = "perimeter"
 
-urlpatterns = [
-    re_path(r'^gateway/', views.gateway, name='gateway'),
-]
+urlpatterns = [re_path(r"^gateway/", views.gateway, name="gateway")]

@@ -1,13 +1,16 @@
 from urllib.parse import urlparse
 
 from django.contrib.auth.models import User, AnonymousUser
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, RequestFactory, override_settings
 from django.urls import reverse, resolve
 
 from ..middleware import (
     PerimeterAccessMiddleware,
     bypass_perimeter,
+    get_access_token,
     get_request_token,
+    HTTP_X_PERIMETER_TOKEN,
     PERIMETER_SESSION_KEY,
 )
 from ..models import AccessToken, EmptyToken
@@ -41,19 +44,34 @@ class PerimeterMiddlewareTests(TestCase):
         request = self.factory.get(reverse("perimeter:gateway"))
         self.assertTrue(bypass_perimeter(request))
 
-    def test_get_request_token(self):
+    def test_get_request_token_session(self):
         at = AccessToken.objects.create_access_token()
         self.request.session[PERIMETER_SESSION_KEY] = at.token
-        self.assertEqual(get_request_token(self.request), at)
+        self.assertEqual(get_request_token(self.request), at.token)
+
+    def test_get_request_token_http_header(self):
+        at = AccessToken.objects.create_access_token()
+        request = self.factory.get("/", HTTP_X_PERIMETER_TOKEN=at.token)
+        request.session = {}
+        self.assertEqual(get_request_token(request), at.token)
+
+    def test_get_access_token(self):
+        at = AccessToken.objects.create_access_token()
+        self.request.session[PERIMETER_SESSION_KEY] = at.token
+        self.assertEqual(get_access_token(self.request), at)
 
     def test_get_request_token_empty(self):
         token = get_request_token(self.request)
-        self.assertTrue(type(token) == EmptyToken)
+        self.assertIsNone(token)
+
+    def test_get_access_token_empty(self):
+        token = get_access_token(self.request)
+        self.assertIsInstance(token, EmptyToken)
 
     def test_missing_session(self):
         """Missing request.session should raise AssertionError."""
         del self.request.session
-        self.assertRaises(AssertionError, get_request_token, self.request)
+        self.assertRaises(ImproperlyConfigured, get_request_token, self.request)
 
     def test_missing_token(self):
         """AnonymousUser without a token should be denied."""
@@ -71,6 +89,14 @@ class PerimeterMiddlewareTests(TestCase):
         self.request.user = AnonymousUser()
         self.request.session["token"] = "foobar"
         self._assertRedirectsToGateway(self.request)
+
+    def test_perimeter_token_header(self):
+        """Test that the X-Perimeter-Token header works."""
+        AccessToken(token="foobar").save()
+        self.request.user = AnonymousUser()
+        self._assertRedirectsToGateway(self.request)
+        self.request.META["HTTP_X_PERIMETER_TOKEN"] = "foobar"
+        self.middleware.process_request(self.request)
 
     def test_next_query_string_set(self):
         """Check `next` query string param is properly encoded"""

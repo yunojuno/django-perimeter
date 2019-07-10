@@ -27,6 +27,9 @@ def get_setting(setting_name, default_value, cast_func=lambda x: x):
     )
 
 
+# Name of HTTP header used to automatically bypass perimeter
+HTTP_X_PERIMETER_TOKEN = "HTTP_X_PERIMETER_TOKEN"
+
 # if False, the middleware will be disabled
 PERIMETER_ENABLED = get_setting("PERIMETER_ENABLED", False, cast_func=CAST_AS_BOOL)
 # request.session key used to store user's token

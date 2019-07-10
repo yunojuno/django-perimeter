@@ -8,7 +8,7 @@ chdir(path.normpath(path.join(path.abspath(__file__), pardir)))
 
 setup(
     name="django-perimeter",
-    version="0.11",
+    version="0.12",
     packages=find_packages(),
     include_package_data=True,
     license="MIT",
@@ -25,11 +25,14 @@ setup(
         "Framework :: Django",
         "Framework :: Django :: 1.11",
         "Framework :: Django :: 2.0",
+        "Framework :: Django :: 2.1",
+        "Framework :: Django :: 2.2",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],

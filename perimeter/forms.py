@@ -27,7 +27,8 @@ class TokenGatewayForm(forms.Form):
 
     def save(self, request):
         """Create a new AccessTokenUse object from the form."""
-        assert getattr(self, 'token', None) is not None, "Form token attr is not set"
+        if getattr(self, 'token', None) is not None:
+            raise ValueError("Form token attr is not set")
         set_request_token(request, self.token.token)
         return self.token.record(
             user_email=self.cleaned_data.get('email'),

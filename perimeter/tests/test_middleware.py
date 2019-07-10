@@ -80,6 +80,14 @@ class PerimeterMiddlewareTests(TestCase):
         self.request.session['token'] = "foobar"
         self._assertRedirectsToGateway(self.request)
 
+    def test_perimeter_token_header(self):
+        """Test that the X-Perimeter-Token header works."""
+        AccessToken(token="foobar").save()
+        self.request.user = AnonymousUser()
+        self._assertRedirectsToGateway(self.request)
+        self.request.META["HTTP_X_PERIMETER_TOKEN"] = "foobar"
+        self.middleware.process_request(self.request)
+
     def test_next_query_string_set(self):
         """Check `next` query string param is properly encoded"""
 

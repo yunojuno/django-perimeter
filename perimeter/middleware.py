@@ -4,43 +4,44 @@ valid token. See Perimeter docs for more details.
 """
 from urllib.parse import urlencode
 
-from django.core.exceptions import MiddlewareNotUsed
+from django.core.exceptions import MiddlewareNotUsed, ImproperlyConfigured
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 
 from .models import AccessToken
 from .settings import (
+    HTTP_X_PERIMETER_TOKEN,
     PERIMETER_SESSION_KEY,
     PERIMETER_ENABLED,
     PERIMETER_BYPASS_FUNCTION as bypass_perimeter
 )
 
 
+def check_middleware(request):
+    """Check that Session middleware is installed."""
+    if not hasattr(request, 'session'):
+        raise ImproperlyConfigured (
+            "Missing session attribute - please check MIDDLEWARE_CLASSES for "
+            "'django.contrib.sessions.middleware.SessionMiddleware'."
+        )
+
+
 def get_request_token(request):
-    """Returns AccessToken if found else EmptyToken."""
-    assert hasattr(request, 'session'), (
-        "Missing session attribute - please check MIDDLEWARE_CLASSES for "
-        "'django.contrib.sessions.middleware.SessionMiddleware'."
+    """Extract token string from HTTP header or querystring."""
+    check_middleware(request)
+    return (
+        request.META.get(HTTP_X_PERIMETER_TOKEN, None) or
+        request.session.get(PERIMETER_SESSION_KEY, None)
     )
-    token_value = request.session.get(PERIMETER_SESSION_KEY, None)
+
+
+def get_access_token(request):
+    """Returns AccessToken if found else EmptyToken."""
+    token = get_request_token(request)
     # NB this method implements caching, so is more performant
     # than the straight get() alternative
-    return AccessToken.objects.get_access_token(token_value)
-
-
-def set_request_token(request, token_value):
-    """Sets the request.session token value.
-
-    Args:
-        token - string, the token value (not the token object, as that is
-            not serializable)
-    """
-    assert hasattr(request, 'session'), (
-        "Missing session attribute - please check MIDDLEWARE_CLASSES for "
-        "'django.contrib.sessions.middleware.SessionMiddleware'."
-    )
-    request.session[PERIMETER_SESSION_KEY] = token_value
+    return AccessToken.objects.get_access_token(token)
 
 
 class PerimeterAccessMiddleware(MiddlewareMixin):
@@ -66,7 +67,7 @@ class PerimeterAccessMiddleware(MiddlewareMixin):
         if bypass_perimeter(request):
             return None
 
-        if get_request_token(request).is_valid:
+        if get_access_token(request).is_valid:
             return None
 
         # redirect to the gateway for validation,

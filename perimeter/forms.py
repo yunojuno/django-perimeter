@@ -1,8 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .middleware import set_request_token
 from .models import AccessToken
+from .settings import PERIMETER_SESSION_KEY
 
 
 class TokenGatewayForm(forms.Form):
@@ -27,9 +27,9 @@ class TokenGatewayForm(forms.Form):
 
     def save(self, request):
         """Create a new AccessTokenUse object from the form."""
-        if getattr(self, 'token', None) is not None:
+        if getattr(self, 'token', None) is None:
             raise ValueError("Form token attr is not set")
-        set_request_token(request, self.token.token)
+        request.session[PERIMETER_SESSION_KEY] = self.token.token
         return self.token.record(
             user_email=self.cleaned_data.get('email'),
             user_name=self.cleaned_data.get('name'),

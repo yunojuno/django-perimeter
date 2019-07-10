@@ -13,10 +13,7 @@ from .settings import PERIMETER_DEFAULT_EXPIRY
 
 def default_expiry():
     """Return the default expiry date."""
-    return (
-        timezone.now() +
-        datetime.timedelta(days=PERIMETER_DEFAULT_EXPIRY)
-    ).date()
+    return (timezone.now() + datetime.timedelta(days=PERIMETER_DEFAULT_EXPIRY)).date()
 
 
 class EmptyToken(object):
@@ -26,6 +23,7 @@ class EmptyToken(object):
     they return an object that can be used like an AccessToken but that
     is always invalid.
     """
+
     @property
     def is_valid(self):
         return False
@@ -40,8 +38,8 @@ class AccessTokenManager(models.Manager):
         # when the random_token_value function returns an existing
         # token value, but it is considered so unlikely as to be
         # acceptable.
-        kwargs['token'] = kwargs.get('token', AccessToken.random_token_value())
-        kwargs['expires_on'] = kwargs.get('expires_on', default_expiry())
+        kwargs["token"] = kwargs.get("token", AccessToken.random_token_value())
+        kwargs["expires_on"] = kwargs.get("expires_on", default_expiry())
         return AccessToken(**kwargs).save()
 
     def get_access_token(self, token_value):
@@ -71,12 +69,15 @@ class AccessToken(models.Model):
     """
     A token that allows a user entry to the site via Perimeter.
     """
+
     token = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     # NB pass in a callable, not the result of the callable, see:
     # http://stackoverflow.com/a/29549675/45698
     expires_on = models.DateField(default=default_expiry)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True
+    )
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -95,19 +96,13 @@ class AccessToken(models.Model):
                     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     "1234567890"
                 ),
-                k=cls._meta.get_field('token').max_length
+                k=cls._meta.get_field("token").max_length,
             )
         )
 
     @classmethod
     def get_cache_key(cls, token_value):
-        return (
-            '%s.%s-%s' % (
-                cls.__module__,
-                cls.__name__,
-                token_value
-            )
-        )
+        return "%s.%s-%s" % (cls.__module__, cls.__name__, token_value)
 
     def save(self, *args, **kwargs):
         "Sets the created_at timestamp."
@@ -126,7 +121,9 @@ class AccessToken(models.Model):
         """Return the number of seconds till expiry (used for caching)."""
         expires_at = datetime.datetime.combine(self.expires_on, datetime.time.min)
         if settings.USE_TZ and timezone.is_naive(expires_at):
-            expires_at = timezone.make_aware(expires_at, timezone.get_current_timezone())
+            expires_at = timezone.make_aware(
+                expires_at, timezone.get_current_timezone()
+            )
         elif not settings.USE_TZ and timezone.is_aware(expires_at):
             expires_at = timezone.make_naive(expires_at)
         return int((expires_at - timezone.now()).total_seconds())
@@ -142,11 +139,7 @@ class AccessToken(models.Model):
         return self.is_active and not self.has_expired
 
     def record(
-        self,
-        user_email,
-        user_name,
-        client_ip='unknown',
-        client_user_agent='unknown'
+        self, user_email, user_name, client_ip="unknown", client_user_agent="unknown"
     ):
         """Record the fact that someone has used the token."""
         atu = AccessTokenUse(
@@ -154,7 +147,7 @@ class AccessToken(models.Model):
             user_email=user_email,
             user_name=user_name,
             client_ip=client_ip,
-            client_user_agent=client_user_agent
+            client_user_agent=client_user_agent,
         )
         atu.save()
         return atu
@@ -174,25 +167,16 @@ def on_delete_access_token(sender, instance, **kwargs):
 
 class AccessTokenUse(models.Model):
     """Audit record used to log whenever an access token is used."""
+
     token = models.ForeignKey(AccessToken, on_delete=models.CASCADE)
     user_email = models.EmailField(
-        verbose_name="Token used by (email)",
-        blank=True, null=True
+        verbose_name="Token used by (email)", blank=True, null=True
     )
     user_name = models.CharField(
-        max_length=100,
-        verbose_name="Token used by (name)",
-        blank=True, null=True
+        max_length=100, verbose_name="Token used by (name)", blank=True, null=True
     )
-    client_ip = models.CharField(
-        max_length=15,
-        verbose_name='IP address',
-        blank=True
-    )
-    client_user_agent = models.TextField(
-        verbose_name="Client User Agent",
-        blank=True
-    )
+    client_ip = models.CharField(max_length=15, verbose_name="IP address", blank=True)
+    client_user_agent = models.TextField(verbose_name="Client User Agent", blank=True)
     timestamp = models.DateTimeField()
 
     def __str__(self):
@@ -200,7 +184,7 @@ class AccessTokenUse(models.Model):
 
     def save(self, *args, **kwargs):
         "Set the timestamp and save the object."
-        if 'update_fields' not in kwargs:
+        if "update_fields" not in kwargs:
             self.timestamp = self.timestamp or timezone.now()
         super(AccessTokenUse, self).save(*args, **kwargs)
         return self

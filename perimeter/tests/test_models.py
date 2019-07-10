@@ -7,15 +7,10 @@ from django.utils.timezone import (
     is_aware,
     is_naive,
     make_aware,
-    get_current_timezone
+    get_current_timezone,
 )
 
-from ..models import (
-    AccessToken,
-    AccessTokenUse,
-    default_expiry,
-    EmptyToken
-)
+from ..models import AccessToken, AccessTokenUse, default_expiry, EmptyToken
 from ..settings import PERIMETER_DEFAULT_EXPIRY
 
 TODAY = now().date()
@@ -24,7 +19,6 @@ TOMORROW = TODAY + timedelta(days=1)
 
 
 class EmptyTokenTests(TestCase):
-
     def test_is_valid(self):
         """EmptyToken should always be invalid."""
         token = EmptyToken()
@@ -32,12 +26,11 @@ class EmptyTokenTests(TestCase):
 
 
 class AccessTokenManagerTests(TestCase):
-
     def test_create_with_token(self):
         """If a token is passed in to create_access_token, it's used."""
-        token = AccessToken.objects.create_access_token(token='x')
+        token = AccessToken.objects.create_access_token(token="x")
         self.assertEqual(token, AccessToken.objects.get())
-        self.assertTrue(token, 'x')
+        self.assertTrue(token, "x")
 
     def test_create_with_expires(self):
         """If an expires is passed in to create_access_token, it's used."""
@@ -63,17 +56,15 @@ class AccessTokenManagerTests(TestCase):
 
 
 class AccessTokenTests(TestCase):
-
     def test_default_expiry(self):
         self.assertEqual(
-            default_expiry(),
-            now().date() + timedelta(days=PERIMETER_DEFAULT_EXPIRY)
+            default_expiry(), now().date() + timedelta(days=PERIMETER_DEFAULT_EXPIRY)
         )
 
     def test_attrs(self):
         # start with the defaults
         at = AccessToken()
-        self.assertEqual(at.token, '')
+        self.assertEqual(at.token, "")
         self.assertEqual(at.is_active, True)
         self.assertEqual(at.expires_on, default_expiry())
         self.assertEqual(at.created_at, None)
@@ -99,7 +90,7 @@ class AccessTokenTests(TestCase):
     def test_str(self):
         today = date.today()
         at = AccessToken(token="¡€#¢∞§¶•ªº", expires_on=today, is_active=True)
-        self.assertEqual(str(at), '¡€#¢∞§¶•ªº')
+        self.assertEqual(str(at), "¡€#¢∞§¶•ªº")
 
     def test_cache_key(self):
         token = AccessToken(token="test")
@@ -113,7 +104,7 @@ class AccessTokenTests(TestCase):
         self.assertIsNone(cache.get(token.cache_key))
 
     def test_generate_random_token(self):
-        f = AccessToken._meta.get_field('token').max_length
+        f = AccessToken._meta.get_field("token").max_length
         t1 = AccessToken.random_token_value()
         t2 = AccessToken.random_token_value()
         self.assertNotEqual(t1, t2)
@@ -137,25 +128,21 @@ class AccessTokenTests(TestCase):
             self.assertTrue(is_naive(expires_at))
             self.assertTrue(is_naive(now()))
             self.assertEqual(
-                at.seconds_to_expiry,
-                int((expires_at - now()).total_seconds())
+                at.seconds_to_expiry, int((expires_at - now()).total_seconds())
             )
 
         with self.settings(USE_TZ=True):
             at = AccessToken(expires_on=TOMORROW)
             expires_at = make_aware(
-                datetime.combine(at.expires_on, time.min),
-                get_current_timezone()
+                datetime.combine(at.expires_on, time.min), get_current_timezone()
             )
             self.assertTrue(is_aware(expires_at))
             self.assertTrue(is_aware(now()))
             self.assertEqual(
-                at.seconds_to_expiry,
-                int((expires_at - now()).total_seconds())
+                at.seconds_to_expiry, int((expires_at - now()).total_seconds())
             )
 
     def test_is_valid(self):
-
         def assertValidity(active, expires, valid):
             return AccessToken(is_active=True, expires_on=TOMORROW).is_valid
 
@@ -179,9 +166,8 @@ class AccessTokenTests(TestCase):
 
 
 class AccesTokenUseTests(TestCase):
-
     def setUp(self):
-        self.token = AccessToken(token='foo').save()
+        self.token = AccessToken(token="foo").save()
 
     def test_save(self):
         atu = AccessTokenUse(token=self.token)

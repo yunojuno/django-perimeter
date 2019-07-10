@@ -1,1 +1,1 @@
-default_app_config = 'perimeter.apps.PerimeterAppConfig'
+default_app_config = "perimeter.apps.PerimeterAppConfig"

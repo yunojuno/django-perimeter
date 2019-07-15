@@ -8,7 +8,7 @@ chdir(path.normpath(path.join(path.abspath(__file__), pardir)))
 
 setup(
     name="django-perimeter",
-    version="0.12",
+    version="0.12.1",
     packages=find_packages(),
     include_package_data=True,
     license="MIT",

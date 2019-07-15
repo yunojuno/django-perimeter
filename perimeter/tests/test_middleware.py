@@ -8,7 +8,6 @@ from django.urls import reverse, resolve
 from ..middleware import (
     PerimeterAccessMiddleware,
     bypass_perimeter,
-    get_access_token,
     get_request_token,
     HTTP_X_PERIMETER_TOKEN,
     PERIMETER_SESSION_KEY,
@@ -58,14 +57,14 @@ class PerimeterMiddlewareTests(TestCase):
     def test_get_access_token(self):
         at = AccessToken.objects.create_access_token()
         self.request.session[PERIMETER_SESSION_KEY] = at.token
-        self.assertEqual(get_access_token(self.request), at)
+        self.assertEqual(self.middleware.get_access_token(self.request), at)
 
     def test_get_request_token_empty(self):
         token = get_request_token(self.request)
         self.assertIsNone(token)
 
     def test_get_access_token_empty(self):
-        token = get_access_token(self.request)
+        token = self.middleware.get_access_token(self.request)
         self.assertIsInstance(token, EmptyToken)
 
     def test_missing_session(self):

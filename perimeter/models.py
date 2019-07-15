@@ -52,6 +52,8 @@ class AccessTokenManager(models.Manager):
             token - string, the token value to look up.
 
         """
+        if not token_value:
+            return EmptyToken()
         cache_key = AccessToken.get_cache_key(token_value)
         token = cache.get(cache_key)
         if token is None:

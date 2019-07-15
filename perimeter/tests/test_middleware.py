@@ -9,7 +9,7 @@ from ..middleware import (
     PerimeterAccessMiddleware,
     bypass_perimeter,
     get_request_token,
-    HTTP_X_PERIMETER_TOKEN,
+    check_middleware,
     PERIMETER_SESSION_KEY,
 )
 from ..models import AccessToken, EmptyToken
@@ -57,20 +57,27 @@ class PerimeterMiddlewareTests(TestCase):
     def test_get_access_token(self):
         at = AccessToken.objects.create_access_token()
         self.request.session[PERIMETER_SESSION_KEY] = at.token
-        self.assertEqual(self.middleware.get_access_token(self.request), at)
+        self.assertEqual(self.middleware.access_token(self.request), at)
 
     def test_get_request_token_empty(self):
         token = get_request_token(self.request)
         self.assertIsNone(token)
 
-    def test_get_access_token_empty(self):
-        token = self.middleware.get_access_token(self.request)
+    def test_access_token_empty(self):
+        token = self.middleware.access_token(self.request)
         self.assertIsInstance(token, EmptyToken)
+
+    def test_check_middleware(self):
+        """Missing request.session should raise AssertionError."""
+        del self.request.session
+        self.assertRaises(ImproperlyConfigured, check_middleware, self.request)
 
     def test_missing_session(self):
         """Missing request.session should raise AssertionError."""
         del self.request.session
-        self.assertRaises(ImproperlyConfigured, get_request_token, self.request)
+        self.assertRaises(
+            ImproperlyConfigured, self.middleware.process_request, self.request
+        )
 
     def test_missing_token(self):
         """AnonymousUser without a token should be denied."""

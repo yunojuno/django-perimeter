@@ -10,11 +10,29 @@ from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 
 from .models import AccessToken
-from .settings import PERIMETER_BYPASS_FUNCTION as bypass_perimeter
-from .settings import PERIMETER_ENABLED
-from .settings import HTTP_X_PERIMETER_TOKEN, PERIMETER_SESSION_KEY
+from .settings import (
+    PERIMETER_BYPASS_FUNCTION as bypass_perimeter,
+    PERIMETER_ENABLED,
+    HTTP_X_PERIMETER_TOKEN,
+    PERIMETER_SESSION_KEY,
+)
 
 
+def check_middleware(func):
+    """Simple decorator that checks a request arg has a Session attached."""
+
+    def inner(request, *args):
+        if not hasattr(request, "session"):
+            raise ImproperlyConfigured(
+                "Missing session attribute - please check MIDDLEWARE_CLASSES for "
+                "'django.contrib.sessions.middleware.SessionMiddleware'."
+            )
+        return func(request, *args)
+
+    return inner
+
+
+@check_middleware
 def get_request_token(request):
     """Extract token string from HTTP header or querystring."""
     return request.META.get(HTTP_X_PERIMETER_TOKEN, None) or request.session.get(
@@ -22,6 +40,7 @@ def get_request_token(request):
     )
 
 
+@check_middleware
 def set_request_token(request, token_value):
     """Sets the request.session token value.
 
@@ -32,13 +51,17 @@ def set_request_token(request, token_value):
     request.session[PERIMETER_SESSION_KEY] = token_value
 
 
-def check_middleware(request):
-    """Check that Session middleware is installed."""
-    if not hasattr(request, "session"):
-        raise ImproperlyConfigured(
-            "Missing session attribute - please check MIDDLEWARE_CLASSES for "
-            "'django.contrib.sessions.middleware.SessionMiddleware'."
-        )
+def get_access_token(request):
+    """Fetch the AccessToken from the request."""
+    token_value = get_request_token(request)
+    return AccessToken.objects.get_access_token(token_value)
+
+
+def get_redirect_url(request):
+    """Unpack request and extract a valid redirect url."""
+    qstring = urlencode({"next": request.get_full_path()})
+    url = reverse("perimeter:gateway")
+    return f"{url}?{qstring}"
 
 
 class PerimeterAccessMiddleware(MiddlewareMixin):
@@ -60,22 +83,12 @@ class PerimeterAccessMiddleware(MiddlewareMixin):
             raise MiddlewareNotUsed("Perimeter disabled")
         super().__init__(*args, **kwargs)
 
-    def access_token(self, request):
-        """Fetch the AccessToken from the request."""
-        token_value = get_request_token(request)
-        return AccessToken.objects.get_access_token(token_value)
-
     def process_request(self, request):
         """Check user session for token."""
-        check_middleware(request)
-
         if bypass_perimeter(request):
             return None
 
-        if self.access_token(request).is_valid:
+        if get_access_token(request).is_valid:
             return None
 
-        # redirect to the gateway for validation,
-        qstring = urlencode({"next": request.get_full_path()})
-        url = reverse("perimeter:gateway")
-        return HttpResponseRedirect(f"{url}?{qstring}")
+        return HttpResponseRedirect(get_redirect_url(request))

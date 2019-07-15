@@ -1,15 +1,19 @@
 from urllib.parse import urlparse
+from unittest import mock
 
 from django.contrib.auth.models import User, AnonymousUser
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, MiddlewareNotUsed
 from django.test import TestCase, RequestFactory, override_settings
 from django.urls import reverse, resolve
 
 from ..middleware import (
     PerimeterAccessMiddleware,
     bypass_perimeter,
+    get_access_token,
     get_request_token,
+    set_request_token,
     check_middleware,
+    PERIMETER_ENABLED,
     PERIMETER_SESSION_KEY,
 )
 from ..models import AccessToken, EmptyToken
@@ -36,6 +40,10 @@ class PerimeterMiddlewareTests(TestCase):
         self.assertEqual(resolver.namespace, "perimeter")
         self.assertEqual(urlparse(resp.url).query, query)
 
+    def test_middleware_disabled(self):
+        with mock.patch("perimeter.middleware.PERIMETER_ENABLED", False):
+            self.assertRaises(MiddlewareNotUsed, PerimeterAccessMiddleware)
+
     def test_bypass_perimeter_default(self):
         """Perimeter login urls excluded."""
         request = self.factory.get("/")
@@ -54,23 +62,34 @@ class PerimeterMiddlewareTests(TestCase):
         request.session = {}
         self.assertEqual(get_request_token(request), at.token)
 
-    def test_get_access_token(self):
-        at = AccessToken.objects.create_access_token()
-        self.request.session[PERIMETER_SESSION_KEY] = at.token
-        self.assertEqual(self.middleware.access_token(self.request), at)
-
     def test_get_request_token_empty(self):
         token = get_request_token(self.request)
         self.assertIsNone(token)
 
+    def test_set_request_token(self):
+        self.assertIsNone(get_request_token(self.request))
+        set_request_token(self.request, "foo")
+        self.assertEqual(get_request_token(self.request), "foo")
+
+    def test_get_access_token(self):
+        at = AccessToken.objects.create_access_token()
+        self.request.session[PERIMETER_SESSION_KEY] = at.token
+        self.assertEqual(get_access_token(self.request), at)
+
     def test_access_token_empty(self):
-        token = self.middleware.access_token(self.request)
+        token = get_access_token(self.request)
         self.assertIsInstance(token, EmptyToken)
 
     def test_check_middleware(self):
         """Missing request.session should raise AssertionError."""
+        self.assertEqual(check_middleware(lambda r: r)(self.request), self.request)
+
+    def test_check_middleware_fails(self):
+        """Missing request.session should raise AssertionError."""
+        self.assertEqual(check_middleware(lambda r: r)(self.request), self.request)
         del self.request.session
-        self.assertRaises(ImproperlyConfigured, check_middleware, self.request)
+        with self.assertRaises(ImproperlyConfigured):
+            check_middleware(lambda r: r)(self.request)
 
     def test_missing_session(self):
         """Missing request.session should raise AssertionError."""

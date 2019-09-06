@@ -1,0 +1,14 @@
+{
+  "name": "Django Perimeter Bypass",
+  "version": "1.0",
+  "description": "Chrome extension to add X-Perimeter-Token header.",
+  "manifest_version": 2,
+  "permissions": ["webRequest", "webRequestBlocking", "storage", "https://*/*"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
+}

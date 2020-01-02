@@ -5,4 +5,3 @@ class PerimeterAppConfig(AppConfig):
 
     name = "perimeter"
     verbose_name = "Perimeter"
-    configs = []

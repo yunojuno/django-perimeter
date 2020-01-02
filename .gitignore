@@ -1,9 +1,10 @@
+.coverage
+.tox/
 *.log
 *.pot
 *.pyc
-local_settings.py
-static
 delme
-.coverage
-.tox/
 django_perimeter.egg-info/
+local_settings.py
+poetry.lock
+static

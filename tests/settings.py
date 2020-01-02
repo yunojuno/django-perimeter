@@ -10,7 +10,7 @@ DEBUG = True
 
 PERIMETER_ENABLED = True
 
-ROOT_URLCONF = "test_app.urls"
+ROOT_URLCONF = "tests.urls"
 
 # this isn't used, but Django likes having something here for running the tests
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "delme"}}
@@ -29,7 +29,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "perimeter",
-    "test_app",
+    "tests",
 )
 
 ACTUAL_MIDDLEWARE_CLASSES = [
@@ -41,10 +41,7 @@ ACTUAL_MIDDLEWARE_CLASSES = [
     "perimeter.middleware.PerimeterAccessMiddleware",
 ]
 
-if DJANGO_VERSION < StrictVersion("1.10.0"):
-    MIDDLEWARE_CLASSES = ACTUAL_MIDDLEWARE_CLASSES
-else:
-    MIDDLEWARE = ACTUAL_MIDDLEWARE_CLASSES
+MIDDLEWARE = ACTUAL_MIDDLEWARE_CLASSES
 
 SECRET_KEY = "something really, really hard to guess goes here."
 

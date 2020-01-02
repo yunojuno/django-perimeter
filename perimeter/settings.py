@@ -3,8 +3,8 @@ from os import environ
 from django.conf import settings
 from django.urls import reverse
 
-CAST_AS_BOOL = lambda x: x in (True, "true", "True")
-CAST_AS_INT = lambda x: int(x)
+CAST_AS_BOOL = lambda x: x in (True, "true", "True")  # noqa: E731
+CAST_AS_INT = lambda x: int(x)  # noqa: E731
 
 
 def get_setting(setting_name, default_value, cast_func=lambda x: x):
@@ -28,7 +28,7 @@ def get_setting(setting_name, default_value, cast_func=lambda x: x):
 
 
 # Name of HTTP header used to automatically bypass perimeter
-HTTP_X_PERIMETER_TOKEN = "HTTP_X_PERIMETER_TOKEN"
+HTTP_X_PERIMETER_TOKEN = "HTTP_X_PERIMETER_TOKEN"  # noqa: S105
 
 # if False, the middleware will be disabled
 PERIMETER_ENABLED = get_setting("PERIMETER_ENABLED", False, cast_func=CAST_AS_BOOL)
@@ -38,8 +38,9 @@ PERIMETER_SESSION_KEY = get_setting("PERIMETER_SESSION_KEY", "perimeter")
 PERIMETER_DEFAULT_EXPIRY = get_setting(
     "PERIMETER_DEFAULT_EXPIRY", 7, cast_func=CAST_AS_INT
 )
-# function used to bypass the perimter - must be function that takes request as only arg
-# NB we don't use get_setting here as it makes no sense - you can put a function into an env var
+# function used to bypass the perimter - must be function that takes request
+# as only arg.
+# NB we don't use get_setting here - you can't put a function into an env var
 PERIMETER_BYPASS_FUNCTION = getattr(
     settings,
     "PERIMETER_BYPASS_FUNCTION",

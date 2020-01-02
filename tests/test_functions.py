@@ -1,8 +1,7 @@
 from os import environ
 
 from django.test import TestCase
-
-from ..settings import get_setting, CAST_AS_INT, CAST_AS_BOOL
+from perimeter.settings import CAST_AS_BOOL, CAST_AS_INT, get_setting
 
 
 class SettingsTests(TestCase):

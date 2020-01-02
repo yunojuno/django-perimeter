@@ -1,10 +1,7 @@
-dist:
-    xenial  # required for SQLite3 3.8.3
-language:
-    python
+dist: xenial # required for SQLite3 3.8.3
+language: python
 python:
-    - "3.6"
-install:
-    pip install tox-travis
-script:
-    tox
+    - "3.7"
+    - "3.8"
+install: pip install tox-travis
+script: tox

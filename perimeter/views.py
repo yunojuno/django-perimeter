@@ -1,15 +1,18 @@
 from urllib.parse import unquote
 
 from django.http import HttpResponseRedirect
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render
-from django.urls import reverse, resolve, Resolver404
+from django.urls import Resolver404, resolve, reverse
 
-from .forms import UserGatewayForm, TokenGatewayForm
+from .forms import TokenGatewayForm, UserGatewayForm
 from .settings import PERIMETER_REQUIRE_USER_DETAILS
 
 
-def resolve_return_url(return_url):
-    """Resolve a URL to confirm that it's valid.
+def resolve_return_url(return_url: str) -> str:
+    """
+    Resolve a URL to confirm that it's valid.
 
     Before redirecting to a return_url, use the resolve function
     to confirm that it matches a valid view function.
@@ -31,8 +34,11 @@ def resolve_return_url(return_url):
         return reverse("perimeter:gateway")
 
 
-def gateway(request, template_name="perimeter/gateway.html"):
-    """Display gateway form and process access requests.
+def gateway(
+    request: HttpRequest, template_name: str = "perimeter/gateway.html"
+) -> HttpResponse:
+    """
+    Display gateway form and process access requests.
 
     When the PerimeterAccessMiddleware catches an unvalidated
     user request they will redirect to this page.
@@ -49,5 +55,8 @@ def gateway(request, template_name="perimeter/gateway.html"):
         if form.is_valid():
             form.save(request)
             return HttpResponseRedirect(resolve_return_url(request.GET.get("next")))
+
+    else:
+        return HttpResponseNotAllowed(["GET", "POST"])
 
     return render(request, template_name, {"form": form})

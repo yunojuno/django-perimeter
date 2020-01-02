@@ -1,11 +1,10 @@
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 from django.utils.timezone import now
-
-from ..forms import TokenGatewayForm, UserGatewayForm
-from ..models import AccessToken, AccessTokenUse
+from perimeter.forms import TokenGatewayForm, UserGatewayForm
+from perimeter.models import AccessToken, AccessTokenUse
 
 YESTERDAY = now().date() - datetime.timedelta(days=1)
 
@@ -33,7 +32,7 @@ class TokenGatewayFormTests(BaseGatewayFormTests):
     def test_post_valid_token(self):
         form = self.get_form(TokenGatewayForm, self.payload)
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.token, self.token)
+        self.assertEqual(form._token, self.token)
         # test with user info missing
         payload = {"token": self.payload["token"]}
         form = self.get_form(TokenGatewayForm, payload)

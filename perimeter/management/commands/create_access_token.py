@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Management command to create a new AccessToken."""
 import datetime
+from argparse import ArgumentParser
+from typing import Any
 
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now
 from django.db.utils import IntegrityError
-
+from django.utils.timezone import now
 from perimeter.models import AccessToken
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
@@ -14,7 +15,7 @@ class Command(BaseCommand):
 
     help = "Create a perimeter access token."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             "-t",
             "--token",
@@ -31,7 +32,7 @@ class Command(BaseCommand):
             help="Expires value (in days)",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
 
         has_expires = options.get("expires") is not None
         days = options.get("expires") or PERIMETER_DEFAULT_EXPIRY

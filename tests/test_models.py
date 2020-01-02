@@ -1,17 +1,16 @@
-from datetime import datetime, date, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 from django.core.cache import cache
 from django.test import TestCase
 from django.utils.timezone import (
-    now,
+    get_current_timezone,
     is_aware,
     is_naive,
     make_aware,
-    get_current_timezone,
+    now,
 )
-
-from ..models import AccessToken, AccessTokenUse, default_expiry, EmptyToken
-from ..settings import PERIMETER_DEFAULT_EXPIRY
+from perimeter.models import AccessToken, AccessTokenUse, EmptyToken, default_expiry
+from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
 TODAY = now().date()
 YESTERDAY = TODAY - timedelta(days=1)

@@ -1,22 +1,20 @@
-from urllib.parse import urlparse
 from unittest import mock
+from urllib.parse import urlparse
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured, MiddlewareNotUsed
-from django.test import TestCase, RequestFactory, override_settings
-from django.urls import reverse, resolve
-
-from ..middleware import (
+from django.test import RequestFactory, TestCase, override_settings
+from django.urls import resolve, reverse
+from perimeter.middleware import (
+    PERIMETER_SESSION_KEY,
     PerimeterAccessMiddleware,
     bypass_perimeter,
+    check_middleware,
     get_access_token,
     get_request_token,
     set_request_token,
-    check_middleware,
-    PERIMETER_ENABLED,
-    PERIMETER_SESSION_KEY,
 )
-from ..models import AccessToken, EmptyToken
+from perimeter.models import AccessToken, EmptyToken
 
 
 @override_settings(PERIMETER_ENABLED=True)

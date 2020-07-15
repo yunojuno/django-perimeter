@@ -13,7 +13,7 @@ PERIMETER_ENABLED = True
 ROOT_URLCONF = "tests.urls"
 
 # this isn't used, but Django likes having something here for running the tests
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "delme"}}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "test.tb"}}
 
 # NB - this is good for local testing only
 DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"

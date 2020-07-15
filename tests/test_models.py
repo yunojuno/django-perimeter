@@ -9,6 +9,7 @@ from django.utils.timezone import (
     make_aware,
     now,
 )
+
 from perimeter.models import AccessToken, AccessTokenUse, EmptyToken, default_expiry
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 

@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured, MiddlewareNotUsed
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import resolve, reverse
+
 from perimeter.middleware import (
     PERIMETER_SESSION_KEY,
     PerimeterAccessMiddleware,

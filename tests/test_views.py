@@ -1,5 +1,6 @@
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
+
 from perimeter.models import AccessToken, AccessTokenUse
 from perimeter.views import gateway, resolve_return_url
 

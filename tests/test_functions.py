@@ -1,6 +1,7 @@
 from os import environ
 
 from django.test import TestCase
+
 from perimeter.settings import CAST_AS_BOOL, CAST_AS_INT, get_setting
 
 

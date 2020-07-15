@@ -3,6 +3,7 @@
 from typing import Any
 
 from django.core.management.base import BaseCommand
+
 from perimeter.models import AccessToken
 
 
@@ -14,4 +15,6 @@ class Command(BaseCommand):
 
         self.stdout.write("Listing all tokens:")
         for token in AccessToken.objects.all():
-            self.stdout.write(str(token))
+            prefix = "- " if token.is_valid else "x "
+            suffix = " expired " if token.has_expired else " expires "
+            self.stdout.write(f"{prefix} {token} {suffix} {token.expires_on}")

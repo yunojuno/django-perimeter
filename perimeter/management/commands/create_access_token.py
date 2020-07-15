@@ -7,6 +7,7 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 from django.utils.timezone import now
+
 from perimeter.models import AccessToken
 from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 

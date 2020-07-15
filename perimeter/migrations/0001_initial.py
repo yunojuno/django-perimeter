@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-import perimeter.models
 from django.conf import settings
 from django.db import migrations, models
+
+import perimeter.models
 
 
 class Migration(migrations.Migration):

@@ -32,9 +32,3 @@ repos:
       hooks:
           - id: mypy
             exclude: ^tests
-
-    # JS, JSON and SCSS formatting
-    - repo: https://github.com/prettier/prettier
-      rev: 2.0.5
-      hooks:
-          - id: prettier

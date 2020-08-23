@@ -1,9 +1,4 @@
-from distutils.version import StrictVersion
 from os import path
-
-import django
-
-DJANGO_VERSION = StrictVersion(django.get_version())
 
 # set the django DEBUG option
 DEBUG = True
@@ -43,7 +38,7 @@ ACTUAL_MIDDLEWARE_CLASSES = [
 
 MIDDLEWARE = ACTUAL_MIDDLEWARE_CLASSES
 
-SECRET_KEY = "something really, really hard to guess goes here."
+SECRET_KEY = "something really, really hard to guess goes here."  # noqa: S105
 
 LOGGING = {
     "version": 1,

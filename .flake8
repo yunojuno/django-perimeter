@@ -14,6 +14,8 @@ ignore =
   W503  # [pycodestyle] line break before binary operator
   W504  # [pycodestyle] line break after binary operator
   # bandit - security warnings
+  S105  # [bandit] Possible hardcoded password string
+  S106  # [bandit] Possible hardcoded password argument
   S308  # [bandit] Use of mark_safe
   S311  # [bandit] Use of random
   S703  # [bandit] Use of django_mark_safe

@@ -26,14 +26,15 @@ class PerimeterMiddlewareTests(TestCase):
         # spoof the Auth and Session middleware
         self.request.user = User()
         self.request.session = {}
-        self.middleware = PerimeterAccessMiddleware()
+        get_response = mock.MagicMock
+        self.middleware = PerimeterAccessMiddleware(get_response=get_response)
 
     def _assertRedirectsToGateway(self, request, query=None):
         query = query or "next=%2F"
         # NB assertRedirects doesn't work!
-        resp = self.middleware.process_request(request)
+        resp = self.middleware(request)
         self.assertEqual(resp.status_code, 302)
-        # use a resolver to strip off any quesrystring params
+        # use a resolver to strip off any querystring params
         resolver = resolve(resp.url)
         self.assertEqual(resolver.url_name, "gateway")
         self.assertEqual(resolver.namespace, "perimeter")
@@ -93,12 +94,10 @@ class PerimeterMiddlewareTests(TestCase):
     def test_missing_session(self):
         """Missing request.session should raise AssertionError."""
         del self.request.session
-        self.assertRaises(
-            ImproperlyConfigured, self.middleware.process_request, self.request
-        )
+        self.assertRaises(ImproperlyConfigured, self.middleware, self.request)
 
     def test_missing_token(self):
-        """AnonymousUser without a token should be denied."""
+        """An AnonymousUser without a token should be denied."""
         self.request.user = AnonymousUser()
         self._assertRedirectsToGateway(self.request)
 
@@ -108,7 +107,7 @@ class PerimeterMiddlewareTests(TestCase):
         self._assertRedirectsToGateway(self.request)
 
     def test_valid_token(self):
-        """AnonymousUser with a valid session token should pass through."""
+        """An AnonymousUser with a valid session token should pass through."""
         AccessToken(token="foobar").save()
         self.request.user = AnonymousUser()
         self.request.session["token"] = "foobar"
@@ -120,11 +119,10 @@ class PerimeterMiddlewareTests(TestCase):
         self.request.user = AnonymousUser()
         self._assertRedirectsToGateway(self.request)
         self.request.META["HTTP_X_PERIMETER_TOKEN"] = "foobar"
-        self.middleware.process_request(self.request)
+        self.middleware(self.request)
 
     def test_next_query_string_set(self):
-        """Check `next` query string param is properly encoded"""
-
+        """Check `next` query string param is properly encoded."""
         # Simple path
         request = self.factory.get("/somepath/")
         request.user = AnonymousUser()

@@ -4,7 +4,7 @@
 .. image:: https://travis-ci.org/yunojuno/django-perimeter.svg?branch=master
     :target: https://travis-ci.org/yunojuno/django-perimeter
 
-**This package now requires Python 3.7+ and Django 2.2+. For previous versions please refer to the relevant branch.**
+**This package now requires Python 3.8+ and Django 3.2+. For previous versions please refer to the relevant branch.**
 
 Django Perimeter
 ================

@@ -35,10 +35,10 @@ To create a new token you need to head to the admin site, and create a new token
 Setup
 -----
 
-1. Add 'perimeter' to your installed apps.
-2. Add 'perimeter.middleware.PerimeterAccessMiddleware' to the list of MIDDLEWARE_CLASSES
-3. Add the perimeter urls - NB must use the 'perimeter' namespace
-4. Add PERIMETER_ENABLED=True to your settings file. This setting can be used to enable or disable Perimeter in different environments.
+1. Add ``"perimeter"`` to your installed apps.
+2. Add ``"perimeter.middleware.PerimeterAccessMiddleware"`` to the list of MIDDLEWARE_CLASSES
+3. Add the perimeter urls, including the ``"perimeter"`` namespace.
+4. Add ``PERIMETER_ENABLED = True`` to your settings file. This setting can be used to enable or disable Perimeter in different environments.
 
 
 Settings:
@@ -49,16 +49,16 @@ Settings:
 
     INSTALLED_APPS = (
         ...
-        'perimeter',
+        "perimeter",
         ...
     )
 
-    # perimeter must appear after sessions middleware as it relies on there
-    # being a valid request.session
+    # Perimeter's middleware must be after SessionMiddleware as it relies on
+    # request.session
     MIDDLEWARE_CLASSES = [
         ...
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'perimeter.middleware.PerimeterAccessMiddleware',
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "perimeter.middleware.PerimeterAccessMiddleware",
         ...
     ]
 
@@ -67,13 +67,12 @@ Site urls:
 .. code:: python
 
     # in site urls
-    urlpatterns = patterns(
-        '',
+    urlpatterns = [
         ...
         # NB you must include the namespace, as it is referenced in the app
-        url(r'^perimeter/', include('perimeter.urls', namespace='perimeter')),
+        path("perimeter/", include("perimeter.urls", namespace="perimeter")),
         ...
-    )
+    ]
 
 Tests
 -----

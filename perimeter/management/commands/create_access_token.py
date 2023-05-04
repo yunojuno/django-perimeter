@@ -13,7 +13,6 @@ from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
 
 class Command(BaseCommand):
-
     help = "Create a perimeter access token."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
@@ -34,7 +33,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-
         has_expires = options.get("expires") is not None
         days = options.get("expires") or PERIMETER_DEFAULT_EXPIRY
         token = options.get("token") or AccessToken.random_token_value()

@@ -20,6 +20,7 @@ from .settings import PERIMETER_ENABLED, PERIMETER_SESSION_KEY
 
 def check_middleware(func: Callable) -> Callable:
     """Check a request arg has a Session attached."""
+
     # noqa: blank line to make black and flake8 play nicely
     def inner(request: HttpRequest, *args: Any) -> Optional[HttpResponse]:
         if not hasattr(request, "session"):

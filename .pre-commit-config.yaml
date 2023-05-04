@@ -1,44 +1,48 @@
+# see docs/python-linting.md for more details
+default_stages: [commit]
+
+default_language_version:
+  python: python3.11
+
 repos:
-  # python import sorting - will amend files
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.10.1
+  # Note that all of the `local` repo hooks are version managed by
+  # poetry. This is done to ensure that the same versions are used locally
+  # as in CI. Update them via poetry when needed.
+  - repo: local
     hooks:
-      - id: isort
+      # Ensure poetry installed package versions are up-to-date with lockfile
+      - id: poetry-install
+        entry: poetry lock --check
+        language: system
+        name: poetry    - Python package installation
+        pass_filenames: false
+        types_or: [python, html]
 
-  # python code formatting - will amend files
-  - repo: https://github.com/ambv/black
-    rev: 22.10.0
-    hooks:
+      # Django template formatting - will amend files
+      - id: djhtml
+        entry: poetry run djhtml
+        language: system
+        name: djhtml    - Django template formatting
+        types: [html]
+        files: ./templates/.*\.html$
+
+      # python code formatting - will amend files
       - id: black
+        entry: poetry run black
+        language: system
+        name: black     - Python code formatting
+        types: [python]
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.2.0
-    hooks:
-      - id: pyupgrade
+      # python code linting
+      - id: ruff
+        entry: poetry run ruff --fix perimeter
+        language: system
+        name: ruff      - Python code linting
+        types: [python]
 
-  # Flake8 includes pyflakes, pycodestyle, mccabe, pydocstyle, bandit
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-bandit
-          - flake8-blind-except
-          - flake8-docstrings
-          - flake8-logging-format
-          - flake8-print
-
-  # python static type checking
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.990
-    hooks:
+      # python static type checking
       - id: mypy
-        # additional_dependencies:
-        args:
-          - --disallow-untyped-defs
-          - --disallow-incomplete-defs
-          - --check-untyped-defs
-          - --no-implicit-optional
-          - --ignore-missing-imports
-          - --follow-imports=silent
-        exclude: ^tests
+        entry: poetry run mypy
+        language: system
+        name: mypy      - Python type checking
+        types: [python]

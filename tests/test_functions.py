@@ -7,7 +7,6 @@ from perimeter.settings import CAST_AS_BOOL, CAST_AS_INT, get_setting
 
 class SettingsTests(TestCase):
     def test_cast_as_bool(self):
-
         self.assertTrue(CAST_AS_BOOL(True))
         self.assertTrue(CAST_AS_BOOL("True"))
         self.assertTrue(CAST_AS_BOOL("true"))
@@ -18,7 +17,6 @@ class SettingsTests(TestCase):
         self.assertFalse(CAST_AS_BOOL("1"))
 
     def test_get_settings(self):
-
         with self.settings(TEST_SETTING=True):
             self.assertTrue(get_setting("TEST_SETTING", False))
             self.assertTrue(get_setting("TEST_SETTING", True))

@@ -8,11 +8,9 @@ from perimeter.models import AccessToken
 
 
 class Command(BaseCommand):
-
     help = "List all active tokens."
 
     def handle(self, *args: Any, **options: Any) -> None:
-
         self.stdout.write("Listing all tokens:")
         for token in AccessToken.objects.all():
             prefix = "- " if token.is_valid else "x "

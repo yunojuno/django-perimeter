@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("perimeter", "0003_auto_20150612_0151")]
 
     operations = [

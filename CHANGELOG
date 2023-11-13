@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.16.0
+
+- Add support for Django 5.0
+- Add support for Python 3.12
+
+No functional code changes.
+
 ## v0.15.0
 
 - Drops support for Python 3.7

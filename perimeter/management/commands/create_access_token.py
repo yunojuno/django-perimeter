@@ -13,7 +13,7 @@ from perimeter.settings import PERIMETER_DEFAULT_EXPIRY
 
 
 class Command(BaseCommand):
-    help = "Create a perimeter access token."
+    help = "Create a perimeter access token."  # noqa: A003
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(

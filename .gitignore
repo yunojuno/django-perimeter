@@ -1,10 +1,13 @@
 .coverage
+.ruff_cache/
 .tox/
 *.log
 *.pot
 *.pyc
 delme
+dist/
 django_perimeter.egg-info/
 local_settings.py
 poetry.lock
 static
+test.db

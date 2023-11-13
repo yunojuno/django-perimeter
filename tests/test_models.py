@@ -120,8 +120,7 @@ class AccessTokenTests(TestCase):
         self.assertFalse(at.has_expired)
 
     def test_seconds_to_expiry(self):
-        "Test that it handles naive and tz-aware times"
-
+        # Test that it handles naive and tz-aware times
         with self.settings(USE_TZ=False):
             at = AccessToken(expires_on=TOMORROW)
             expires_at = datetime.combine(at.expires_on, time.min)

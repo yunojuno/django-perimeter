@@ -8,7 +8,7 @@ from perimeter.models import AccessToken
 
 
 class Command(BaseCommand):
-    help = "List all active tokens."
+    help = "List all active tokens."  # noqa: A003
 
     def handle(self, *args: Any, **options: Any) -> None:
         self.stdout.write("Listing all tokens:")

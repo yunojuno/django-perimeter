@@ -1,6 +1,6 @@
 from django.contrib.admin import ModelAdmin, site
 
-from .models import AccessToken, AccessTokenUse
+from .models import AccessToken
 
 
 class AccessTokenAdmin(ModelAdmin):
@@ -24,15 +24,15 @@ class AccessTokenAdmin(ModelAdmin):
 site.register(AccessToken, AccessTokenAdmin)
 
 
-class AccessTokenUseAdmin(ModelAdmin):
-    list_display = ("token", "expires_on", "timestamp", "client_ip")
-    readonly_fields = ("timestamp", "client_user_agent", "client_ip")
-    raw_id_fields = ("token",)
+# class AccessTokenUseAdmin(ModelAdmin):
+#     list_display = ("token", "expires_on", "timestamp", "client_ip")
+#     readonly_fields = ("timestamp", "client_user_agent", "client_ip")
+#     raw_id_fields = ("token",)
 
-    def expires_on(self, obj):
-        return obj.token.expires_on
+#     def expires_on(self, obj):
+#         return obj.token.expires_on
 
-    expires_on.short_description = "Token Expires"
+#     expires_on.short_description = "Token Expires"
 
 
-site.register(AccessTokenUse, AccessTokenUseAdmin)
+# site.register(AccessTokenUse, AccessTokenUseAdmin)

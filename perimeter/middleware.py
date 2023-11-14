@@ -13,9 +13,12 @@ from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 
 from .models import AccessToken, EmptyToken
-from .settings import HTTP_X_PERIMETER_TOKEN
-from .settings import PERIMETER_BYPASS_FUNCTION as bypass_perimeter
-from .settings import PERIMETER_ENABLED, PERIMETER_SESSION_KEY
+from .settings import (
+    HTTP_X_PERIMETER_TOKEN,
+    PERIMETER_BYPASS_FUNCTION as bypass_perimeter,
+    PERIMETER_ENABLED,
+    PERIMETER_SESSION_KEY,
+)
 
 
 def check_middleware(func: Callable) -> Callable:

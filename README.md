@@ -64,8 +64,7 @@ Setup
 
 Settings:
 
-.. code:: python
-
+```python
     PERIMETER_ENABLED = True
 
     INSTALLED_APPS = (
@@ -82,11 +81,11 @@ Settings:
         "perimeter.middleware.PerimeterAccessMiddleware",
         ...
     ]
+```
 
 Site urls:
 
-.. code:: python
-
+```python
     # in site urls
     urlpatterns = [
         ...
@@ -94,6 +93,7 @@ Site urls:
         path("perimeter/", include("perimeter.urls", namespace="perimeter")),
         ...
     ]
+```
 
 ## Tests
 

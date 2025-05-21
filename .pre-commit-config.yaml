@@ -35,7 +35,7 @@ repos:
 
       # python code linting
       - id: ruff
-        entry: poetry run ruff --fix perimeter
+        entry: poetry run ruff check --fix
         language: system
         name: ruff      - Python code linting
         types: [python]

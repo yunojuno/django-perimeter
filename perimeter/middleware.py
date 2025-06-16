@@ -4,6 +4,7 @@ Check all incoming requests for a valid token.
 See Perimeter docs for more details.
 
 """
+
 from typing import Any, Callable, Optional, Union
 from urllib.parse import urlencode
 
@@ -24,7 +25,6 @@ from .settings import (
 def check_middleware(func: Callable) -> Callable:
     """Check a request arg has a Session attached."""
 
-    # noqa: blank line to make black and flake8 play nicely
     def inner(request: HttpRequest, *args: Any) -> Optional[HttpResponse]:
         if not hasattr(request, "session"):
             raise ImproperlyConfigured(

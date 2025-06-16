@@ -6,7 +6,7 @@ process that you have.
 
 ## Compatibility
 
-**This package now requires Python 3.8+ and Django 3.2+.**
+**This package now requires Python 3.8+ and Django 4.2+.**
 
 For previous versions please refer to the relevant branch.
 

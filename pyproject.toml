@@ -5,16 +5,14 @@ description = "Site-wide perimeter access control for Django projects."
 license = "MIT"
 authors = ["YunoJuno <code@yunojuno.com>"]
 maintainers = ["YunoJuno <code@yunojuno.com>"]
-readme = "README"
+readme = "README.md"
 homepage = "https://github.com/yunojuno/django-perimeter"
 repository = "https://github.com/yunojuno/django-perimeter"
 classifiers = [
     "Environment :: Web Environment",
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
-    "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.2",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.8",
@@ -27,7 +25,7 @@ packages = [{ include = "perimeter" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-django = "^3.2 || ^4.0 | ^5.0"
+django = "^4.2 | ^5.0 | ^5.2"
 
 [tool.poetry.dev-dependencies]
 black = "*"

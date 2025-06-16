@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.17.0
+
+- Adds support for Django 5.2
+- Drops support for Django versions below 4.2
+- Updates ruff command in pre-commit configuration
+
+No functional code changes.
+
 ## v0.16.0
 
 - Add support for Django 5.0

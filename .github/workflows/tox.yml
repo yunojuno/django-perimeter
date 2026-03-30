@@ -64,7 +64,7 @@ jobs:
         django: ["52", "60", "main"]
 
     env:
-      TOXENV: django${{ matrix.django }}-py${{ matrix.python }}
+      TOXENV: django${{ matrix.django }}-py${{ matrix.python == '3.12' && '312' || '313' }}
 
     steps:
       - name: Check out the repository

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Management command to list all active tokens."""
+
 from typing import Any
 
 from django.core.management.base import BaseCommand

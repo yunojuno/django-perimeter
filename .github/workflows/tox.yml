@@ -63,9 +63,6 @@ jobs:
         python: ["3.12", "3.13"]
         django: ["52", "60", "main"]
 
-    env:
-      TOXENV: django${{ matrix.django }}-py${{ matrix.python }}
-
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -78,4 +75,4 @@ jobs:
       - name: Install and run tox
         run: |
           pip install tox
-          tox
+          TOXENV=django${{ matrix.django }}-py$(echo ${{ matrix.python }} | tr -d '.') tox

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Management command to list all active tokens."""
+
 from typing import Any
 
 from django.core.management.base import BaseCommand
@@ -15,4 +16,8 @@ class Command(BaseCommand):
         for token in AccessToken.objects.all():
             prefix = "- " if token.is_valid else "x "
             suffix = " expired " if token.has_expired else " expires "
-            self.stdout.write(f"{prefix} {token} {suffix} {token.expires_on}")
+            line = f"{prefix}{token} {suffix} {token.expires_on}"
+            if token.is_valid:
+                self.stdout.write(self.style.SUCCESS(line))
+            else:
+                self.stdout.write(self.style.ERROR(line))

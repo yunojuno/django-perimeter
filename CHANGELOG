@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.19.0
+
+- Sets `related_name="perimeter_access_tokens"` on `AccessToken.created_by`, so
+  it no longer clashes with other apps' `AccessToken` models on `User.accesstoken_set`
+- Adds migration `0006_accesstoken_created_by_related_name` (no database changes)
+
+**Breaking:** the reverse accessor `user.accesstoken_set` is now `user.perimeter_access_tokens`.
+
 ## v0.17.0
 
 - Adds support for Django 5.2

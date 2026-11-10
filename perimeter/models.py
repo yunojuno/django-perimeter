@@ -78,7 +78,10 @@ class AccessToken(models.Model):
     # http://stackoverflow.com/a/29549675/45698
     expires_on = models.DateField(default=default_expiry)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="perimeter_access_tokens",
     )
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

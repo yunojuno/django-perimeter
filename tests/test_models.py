@@ -1,5 +1,6 @@
 from datetime import date, datetime, time, timedelta
 
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import TestCase
 from django.utils.timezone import (
@@ -86,6 +87,11 @@ class AccessTokenTests(TestCase):
 
         self.assertTrue(at.is_valid)
         self.assertFalse(at.has_expired)
+
+    def test_created_by_related_name(self):
+        user = User.objects.create_user(username="hugo")
+        at = AccessToken.objects.create_access_token(created_by=user)
+        self.assertEqual(list(user.perimeter_access_tokens.all()), [at])
 
     def test_str(self):
         today = date.today()
